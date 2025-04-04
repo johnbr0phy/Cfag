@@ -16,14 +16,11 @@
             --completed-text: #0f5132; /* Darker success green */
             --hover-bg: #f8f9fa; /* Very light grey */
             --sidebar-width: 280px;
+            --welcome-bg: rgba(0, 0, 0, 0.7); /* Overlay background */
         }
 
-        html {
-            box-sizing: border-box;
-        }
-        *, *:before, *:after {
-            box-sizing: inherit;
-        }
+        html { box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
 
         body {
             margin: 0;
@@ -33,8 +30,61 @@
             display: flex;
             height: 100vh;
             overflow: hidden; /* Prevent body scrolling on desktop */
-            font-size: 16px; /* Base font size for desktop */
+            font-size: 16px; /* Base font size */
         }
+
+        /* --- Welcome Screen --- */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--welcome-bg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        #welcome-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Allow interaction with content below */
+        }
+        .welcome-box {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .welcome-box h1 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .welcome-box p {
+            line-height: 1.6;
+            color: var(--light-text);
+            margin-bottom: 25px;
+        }
+        #start-button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #start-button:hover {
+            background-color: #004085;
+        }
+
 
         .course-container {
             display: flex;
@@ -42,7 +92,7 @@
             height: 100%;
         }
 
-        /* --- Sidebar --- */
+        /* --- Sidebar (Mostly unchanged) --- */
         .sidebar {
             width: var(--sidebar-width);
             flex-shrink: 0;
@@ -50,389 +100,170 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            height: 100%; /* Full height */
+            height: 100%;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
         }
+        .sidebar-header { padding: 18px 15px; border-bottom: 1px solid var(--border-color); background-color: var(--primary-color); color: white; text-align: center; flex-shrink: 0; }
+        .sidebar-header h2 { margin: 0; font-size: 1.2em; font-weight: 500; }
+        #progress-indicator { padding: 12px 15px; font-size: 0.85em; background-color: var(--secondary-color); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        #progress-text { margin-bottom: 8px; display: block; color: var(--light-text); }
+        #progress-bar-container { width: 100%; background-color: #e9ecef; border-radius: 5px; overflow: hidden; height: 12px; margin-top: 5px; }
+        #progress-bar { width: 0%; height: 100%; background-color: var(--primary-color); transition: width 0.4s ease-in-out; border-radius: 5px; }
+        #week-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; -webkit-overflow-scrolling: touch; }
+        #week-list li { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s, border-left-color 0.2s; font-size: 0.9em; display: flex; justify-content: space-between; align-items: center; color: var(--light-text); position: relative; border-left: 4px solid transparent; }
+        #week-list li:hover { background-color: var(--hover-bg); }
+        #week-list li.active { background-color: var(--secondary-color); font-weight: 600; border-left-color: var(--primary-color); color: var(--text-color); }
+        #week-list li.completed { color: var(--completed-text); }
+        #week-list li .week-status { font-size: 1.1em; margin-left: 10px; color: transparent; font-weight: bold; flex-shrink: 0; }
+        #week-list li.completed .week-status { color: var(--completed-text); }
+        #week-list li .week-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 5px; }
 
-        .sidebar-header {
-            padding: 18px 15px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            flex-shrink: 0; /* Prevent shrinking */
-        }
+        /* --- Main Content Area (Mostly unchanged) --- */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .main-header { padding: 15px 25px; border-bottom: 1px solid var(--border-color); background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; position: relative; z-index: 10; }
+        .main-header .navigation { display: flex; gap: 10px; }
+        .navigation button { padding: 8px 18px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; font-size: 0.9em; white-space: nowrap; }
+        .navigation button:hover:not(:disabled) { background-color: #004085; }
+        .navigation button:disabled { background-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
+        #current-week-display { font-size: 1.05em; font-weight: 500; color: var(--text-color); text-align: center; flex-grow: 1; margin: 0 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .content-scroll-area { flex-grow: 1; overflow-y: auto; padding: 25px 30px; background-color: #fdfdfd; -webkit-overflow-scrolling: touch; }
+        #week-detail h2 { margin-top: 0; color: var(--primary-color); font-size: 1.7em; margin-bottom: 8px; font-weight: 600; line-height: 1.3; }
+        #week-detail .week-meta { font-size: 0.9em; color: var(--light-text); margin-bottom: 25px; }
+        #week-detail h3 { font-size: 1.3em; color: var(--text-color); margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid var(--secondary-color); padding-bottom: 8px; font-weight: 500; }
+        #week-detail p, #week-detail li { line-height: 1.7; color: var(--light-text); margin-bottom: 1em; }
+        #week-detail strong { color: var(--text-color); font-weight: 600; }
+        .encouragement-container, .trythis-container { background-color: #ffffff; padding: 15px 20px; border-radius: 5px; border: 1px solid var(--border-color); margin-top: 10px; }
+        .encouragement-container p:last-child, .trythis-container p:last-child { margin-bottom: 0; }
+        #week-detail img { max-width: 100%; height: auto; margin-top: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block; background-color: var(--secondary-color); border: 1px solid var(--border-color); }
+        .image-placeholder { min-height: 150px; background-color: var(--secondary-color); border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--light-text); font-style: italic; border-radius: 5px; margin-top: 20px; text-align: center; padding: 20px; font-size: 0.9em; }
+        .image-loaded-container img { /* Styles for image after loaded */ border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: none; } /* Remove placeholder styles */
+        .image-placeholder.error { border-color: #dc3545; color: #dc3545; }
 
-        .sidebar-header h2 {
-            margin: 0;
-            font-size: 1.2em; /* Adjusted relative size */
-            font-weight: 500;
-        }
-
-        #progress-indicator {
-            padding: 12px 15px;
-            font-size: 0.85em; /* Adjusted relative size */
-            background-color: var(--secondary-color);
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0; /* Prevent shrinking */
-        }
-         #progress-text {
-             margin-bottom: 8px;
-             display: block; /* Ensure it takes full width */
-             color: var(--light-text);
-         }
-
-        #progress-bar-container {
-            width: 100%;
-            background-color: #e9ecef;
+        /* --- Submission Area --- */
+        .submission-area {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
-            overflow: hidden;
-            height: 12px;
-            margin-top: 5px;
-        }
-
-        #progress-bar {
-            width: 0%; /* Initial width */
-            height: 100%;
-            background-color: var(--primary-color);
-            transition: width 0.4s ease-in-out;
-            border-radius: 5px;
-        }
-
-
-        #week-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            overflow-y: auto; /* Enable scrolling for the list */
-            flex-grow: 1; /* Allow list to take remaining space */
-            -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
-        }
-
-        #week-list li {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background-color 0.2s, border-left-color 0.2s;
-            font-size: 0.9em; /* Adjusted relative size */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--light-text);
-            position: relative; /* For pseudo-elements */
-            border-left: 4px solid transparent; /* Placeholder for active state */
-        }
-
-        #week-list li:hover {
-            background-color: var(--hover-bg);
-        }
-
-        #week-list li.active {
-            background-color: var(--secondary-color);
-            font-weight: 600; /* Slightly bolder */
-            border-left-color: var(--primary-color);
-            color: var(--text-color);
-        }
-
-        #week-list li.completed {
-           /* Background is slightly lighter green */
-           color: var(--completed-text); /* Text is darker green */
-        }
-        #week-list li.completed .week-title {
-            /* Optional: Make title slightly bolder when completed */
-             /* font-weight: 500; */
-        }
-
-        #week-list li .week-status {
-            font-size: 1.1em; /* Checkmark size relative to li font-size */
-            margin-left: 10px;
-            color: transparent; /* Hide by default */
-            font-weight: bold;
-            flex-shrink: 0; /* Prevent checkmark from shrinking */
-        }
-        #week-list li.completed .week-status {
-             color: var(--completed-text); /* Show checkmark */
-        }
-         #week-list li .week-title {
-             overflow: hidden; /* Prevent long titles causing issues */
-             text-overflow: ellipsis; /* Add ellipsis for overflow */
-             white-space: nowrap; /* Keep title on one line */
-             margin-right: 5px; /* Space between title and checkmark */
-         }
-
-
-        /* --- Main Content Area --- */
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column; /* Stack navigation and content */
-            height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Prevent main content overflow issues on desktop */
-        }
-
-        .main-header {
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--border-color);
             background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0; /* Prevent header from shrinking */
-            position: relative; /* Context for z-index if needed */
-            z-index: 10; /* Keep header above potentially complex content */
         }
-        .main-header .navigation {
-             display: flex; /* Keep nav buttons together */
-             gap: 10px; /* Space between prev/next if needed */
-        }
-
-        .navigation button {
-            padding: 8px 18px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
-            font-size: 0.9em; /* Adjusted relative size */
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .navigation button:hover:not(:disabled) {
-            background-color: #004085; /* Darken blue on hover */
-        }
-         .navigation button:disabled {
-            background-color: #adb5bd; /* Grey out disabled */
-             cursor: not-allowed;
-             opacity: 0.7;
-         }
-
-        #current-week-display {
-            font-size: 1.05em; /* Adjusted relative size */
-            font-weight: 500;
-            color: var(--text-color);
-            text-align: center;
-            flex-grow: 1; /* Take available space */
-            margin: 0 15px; /* Space around title */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .content-scroll-area {
-             flex-grow: 1; /* Take remaining vertical space */
-             overflow-y: auto; /* Enable scrolling ONLY for this area */
-             padding: 25px 30px; /* Padding inside the scroll area */
-             background-color: #fdfdfd; /* Slightly off-white background for content */
-             -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
-        }
-
-
-        #week-detail h2 {
+        .submission-area h4 {
             margin-top: 0;
-            color: var(--primary-color);
-            font-size: 1.7em; /* Adjusted relative size */
-            margin-bottom: 8px;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-        #week-detail .week-meta {
-            font-size: 0.9em; /* Adjusted relative size */
-            color: var(--light-text);
-            margin-bottom: 25px;
-        }
-         #week-detail h3 { /* Style for Encouragement/TryThis titles */
-            font-size: 1.3em; /* Adjusted relative size */
-            color: var(--text-color);
-            margin-top: 30px;
             margin-bottom: 15px;
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 8px;
-            font-weight: 500;
-         }
-
-        #week-detail p, #week-detail li {
-            line-height: 1.7;
-            color: var(--light-text);
-            margin-bottom: 1em; /* Space between paragraphs */
-        }
-        #week-detail strong {
+            font-size: 1.1em;
             color: var(--text-color);
-            font-weight: 600;
         }
-
-        /* Specific styling for sections */
-        .encouragement-container, .trythis-container {
-            background-color: #ffffff;
-            padding: 15px 20px;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            margin-top: 10px; /* Space below the heading */
+        /* Hide default file input */
+        #submission-upload {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
         }
-        .encouragement-container p:last-child, .trythis-container p:last-child {
-             margin-bottom: 0; /* Remove extra margin at the end */
-         }
-
-
-        #week-detail img {
-            max-width: 100%;
-            height: auto;
-            margin-top: 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            display: block; /* Prevents extra space below */
-            background-color: var(--secondary-color); /* Placeholder bg */
-            border: 1px solid var(--border-color);
-        }
-
-        .completion-toggle {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        #complete-button {
-            padding: 10px 25px;
-            font-size: 1em; /* Keep button size consistent */
-            border-radius: 5px;
-            cursor: pointer;
-            border: 1px solid;
-            transition: background-color 0.2s, color 0.2s;
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-        }
-
-        #complete-button.mark-complete {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        /* Style the label like a button */
+        .upload-label {
+            display: inline-block;
+            padding: 8px 20px;
+            font-size: 0.9em;
+            font-weight: 500;
             color: white;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 15px;
+            -webkit-tap-highlight-color: transparent;
         }
-        #complete-button.mark-complete:hover {
+        .upload-label:hover {
             background-color: #004085;
         }
-
-        #complete-button.mark-incomplete {
-            background-color: var(--completed-color);
-            border-color: var(--completed-text);
-            color: var(--completed-text);
-            font-weight: 500;
-        }
-         #complete-button.mark-incomplete:hover {
-             background-color: #bcdfca; /* Slightly darker green on hover */
-         }
-
-
-        /* Image Error/Loading */
-        .image-placeholder {
-            min-height: 150px;
-            background-color: var(--secondary-color);
-            border: 1px dashed var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #file-info {
+            display: inline-block; /* Keep on same line */
+            font-size: 0.9em;
             color: var(--light-text);
             font-style: italic;
-            border-radius: 5px;
-            margin-top: 20px;
-            text-align: center;
-            padding: 20px;
+        }
+        #thumbnail-preview {
+            display: block; /* On its own line */
+            max-width: 150px; /* Limit thumbnail size */
+            max-height: 150px;
+            margin-top: 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            object-fit: cover; /* Scale image nicely */
+        }
+        #thumbnail-preview:not([src]) {
+            display: none; /* Hide if no src */
         }
 
-        /* --- Responsive Design --- */
+
+        /* --- Completion Toggle (Mostly unchanged) --- */
+        .completion-toggle { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; }
+        #complete-button { padding: 10px 25px; font-size: 1em; border-radius: 5px; cursor: pointer; border: 1px solid; transition: background-color 0.2s, color 0.2s, opacity 0.2s; -webkit-tap-highlight-color: transparent; }
+        #complete-button:disabled { background-color: #adb5bd; border-color: #adb5bd; color: #fff; cursor: not-allowed; opacity: 0.65; }
+        #complete-button.mark-complete { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+        #complete-button.mark-complete:hover:not(:disabled) { background-color: #004085; }
+        #complete-button.mark-incomplete { background-color: var(--completed-color); border-color: var(--completed-text); color: var(--completed-text); font-weight: 500; }
+        #complete-button.mark-incomplete:hover { background-color: #bcdfca; }
+
+        /* --- Responsive Design (Adjustments for new elements) --- */
         @media (max-width: 768px) {
-            body {
-                /* Stack elements vertically */
-                flex-direction: column;
-                height: auto; /* Allow body to grow */
-                overflow-y: auto; /* Enable scrolling for the whole page */
-                font-size: 15px; /* Slightly smaller base font for mobile */
-            }
-            .course-container {
-                 flex-direction: column;
-                 height: auto; /* Allow container to grow */
-            }
-
-            .sidebar {
-                width: 100%; /* Full width */
-                height: auto; /* Let content determine height */
-                /* Set a max-height to prevent it taking too much space initially */
-                max-height: 40vh; /* Max 40% of viewport height */
-                border-right: none; /* Remove side border */
-                border-bottom: 1px solid var(--border-color); /* Add bottom border */
-                flex-shrink: 0; /* Prevent shrinking */
-            }
-
-             .sidebar-header { padding: 12px 15px; }
-             #progress-indicator { padding: 10px 15px; }
-
-            #week-list {
-                 /* Already set to flex-grow: 1 and overflow: auto */
-                 /* It will take space within the sidebar's max-height */
-            }
-
-            .main-content {
-                 height: auto; /* Let content determine height */
-                 overflow: visible; /* Remove internal fixed height/scroll */
-                 width: 100%; /* Ensure full width */
-                 /* No flex-grow needed as body scrolls */
-            }
-
-            .main-header {
-                padding: 10px 15px; /* Adjust padding */
-                flex-wrap: wrap; /* Allow wrapping */
-                justify-content: center; /* Center items when wrapped */
-                gap: 8px; /* Add gap between items */
-            }
-             #current-week-display {
-                 order: -1; /* Move title above buttons */
-                 width: 100%; /* Make title take full width */
-                 text-align: center;
-                 margin: 0 0 5px 0; /* Remove side margins, add bottom margin */
-                 font-size: 1.1em; /* Slightly larger title on mobile */
-             }
-             .main-header .navigation {
-                 /* Ensure buttons are side-by-side and take full width */
-                 display: flex;
-                 justify-content: space-between; /* Space out Prev/Next */
-                 width: 100%;
-             }
-              .navigation button {
-                  padding: 8px 12px; /* Slightly smaller padding */
-                  flex-grow: 1; /* Allow buttons to grow */
-                  flex-basis: 0; /* Distribute space evenly */
-                  margin: 0 4px; /* Small gap between buttons */
-              }
-
-
-            .content-scroll-area {
-                padding: 15px 15px 25px 15px; /* Adjust padding */
-                overflow-y: visible; /* Let body scroll */
-            }
-
-             /* Adjust content font sizes */
-             #week-detail h2 { font-size: 1.5em; }
-             #week-detail h3 { font-size: 1.2em; }
-             #complete-button { font-size: 0.95em; padding: 10px 20px; }
+            body { flex-direction: column; height: auto; overflow-y: auto; font-size: 15px; }
+            .course-container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; height: auto; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+            .sidebar-header { padding: 12px 15px; }
+            #progress-indicator { padding: 10px 15px; }
+            .main-content { height: auto; overflow: visible; width: 100%; }
+            .main-header { padding: 10px 15px; flex-wrap: wrap; justify-content: center; gap: 8px; }
+            #current-week-display { order: -1; width: 100%; text-align: center; margin: 0 0 5px 0; font-size: 1.1em; }
+            .main-header .navigation { display: flex; justify-content: space-between; width: 100%; }
+            .navigation button { padding: 8px 12px; flex-grow: 1; flex-basis: 0; margin: 0 4px; }
+            .content-scroll-area { padding: 15px 15px 25px 15px; overflow-y: visible; }
+            #week-detail h2 { font-size: 1.5em; }
+            #week-detail h3 { font-size: 1.2em; }
+            .submission-area { padding: 15px; }
+            .upload-label { display: block; margin-bottom: 10px; text-align: center; } /* Stack button on mobile */
+            #file-info { display: block; text-align: center; } /* Stack file info */
+            #thumbnail-preview { margin-left: auto; margin-right: auto; } /* Center thumbnail */
+            #complete-button { font-size: 0.95em; padding: 10px 20px; }
+            .welcome-box { width: 95%; padding: 20px; }
+            .welcome-box h1 { font-size: 1.5em; }
+            .welcome-box p { font-size: 0.95em; }
+            #start-button { padding: 10px 25px; font-size: 1em; }
         }
-
         @media (max-width: 480px) {
-            /* Further adjustments for very small screens */
-             body { font-size: 14px; }
-             .sidebar-header h2 { font-size: 1.1em; }
-             #week-list li { font-size: 0.85em; padding: 8px 12px; }
-             .main-header { padding: 8px 10px; gap: 5px; }
-             #current-week-display { font-size: 1em; }
-             .navigation button { padding: 6px 10px; font-size: 0.85em;}
-             .content-scroll-area { padding: 10px 10px 20px 10px; }
-             #week-detail h2 { font-size: 1.4em; }
-             #week-detail h3 { font-size: 1.15em; }
-             #complete-button { font-size: 0.9em; padding: 8px 15px; }
+            body { font-size: 14px; }
+            .sidebar-header h2 { font-size: 1.1em; }
+            #week-list li { font-size: 0.85em; padding: 8px 12px; }
+            .main-header { padding: 8px 10px; gap: 5px; }
+            #current-week-display { font-size: 1em; }
+            .navigation button { padding: 6px 10px; font-size: 0.85em;}
+            .content-scroll-area { padding: 10px 10px 20px 10px; }
+            #week-detail h2 { font-size: 1.4em; }
+            #week-detail h3 { font-size: 1.15em; }
+            .submission-area h4 { font-size: 1em; }
+            .upload-label { font-size: 0.85em; padding: 8px 15px; }
+            #file-info { font-size: 0.85em; }
+            #complete-button { font-size: 0.9em; padding: 8px 15px; }
+            .welcome-box { padding: 15px; }
+            .welcome-box h1 { font-size: 1.3em; }
+            #start-button { padding: 8px 20px; font-size: 0.95em; }
         }
 
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <div id="welcome-overlay">
+        <div class="welcome-box">
+            <h1>Welcome to the Sketching Year!</h1>
+            <p>This interactive guide follows the 2025-26 Master Sketching Plan. Each week presents a new theme and prompt to inspire your creativity. Use the sidebar to navigate weeks, read the guidance, and try the suggestions. Upload a photo of your sketch for each week to track your progress. You can only mark a week as complete after uploading your submission. Your progress and uploads (filenames/previews) are saved locally in your browser. Happy sketching!</p>
+            <button id="start-button">Get Started</button>
+        </div>
+    </div>
+
     <div class="course-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -446,7 +277,6 @@
                 </div>
             </div>
             <ul id="week-list">
-                <!-- Week list items will be generated here -->
                 <li class="loading">Loading weeks...</li>
             </ul>
         </aside>
@@ -464,12 +294,22 @@
             </div>
             <div class="content-scroll-area">
                  <div id="week-detail">
-                     <!-- Current week details will be loaded here -->
-                     <p class="initial-message" style="text-align: center; margin-top: 30px; color: var(--light-text);">Select a week from the list above to get started.</p>
+                     <!-- Initial message, replaced when week loads -->
+                     <p class="initial-message" style="text-align: center; margin-top: 30px; color: var(--light-text);">Select a week from the list to get started.</p>
                  </div>
-                  <div class="completion-toggle">
-                      <button id="complete-button" disabled>Mark as Complete</button>
-                  </div>
+                 <!-- Submission Area -->
+                 <div class="submission-area" id="submission-section" style="display: none;"> <!-- Initially hidden -->
+                     <h4>Your Submission</h4>
+                     <label for="submission-upload" class="upload-label">Choose Image</label>
+                     <input type="file" id="submission-upload" name="submission_upload" accept="image/*">
+                     <span id="file-info">No file selected.</span>
+                     <img id="thumbnail-preview" src="" alt="Submission preview">
+                 </div>
+
+                 <!-- Completion Toggle -->
+                 <div class="completion-toggle">
+                      <button id="complete-button" disabled>Upload Submission to Complete</button>
+                 </div>
             </div>
         </main>
     </div>
@@ -533,16 +373,25 @@
 
         // --- Application State & Logic ---
         let currentWeekIndex = 0;
-        let completionStatus = {}; // Object to store completion state: { '01': true, '02': false, ... }
+        let completionStatus = {}; // { '01': true, ... }
+        let submissionStatus = {}; // { '01': { filename: '...', thumbnail: 'data:image/...' }, ... }
         const totalWeeks = sketchingData.length;
-        const STORAGE_KEY = 'sketchingCourseProgress_25_26'; // Unique key for localStorage
+        const COMPLETION_STORAGE_KEY = 'sketchingCourseCompletion_25_26';
+        const SUBMISSION_STORAGE_KEY = 'sketchingCourseSubmissions_25_26';
+        const THUMBNAIL_MAX_WIDTH = 150; // Max width for stored thumbnails
 
         // DOM Elements
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+        const startButton = document.getElementById('start-button');
         const weekList = document.getElementById('week-list');
         const weekDetail = document.getElementById('week-detail');
         const currentWeekDisplay = document.getElementById('current-week-display');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
+        const submissionSection = document.getElementById('submission-section');
+        const fileInput = document.getElementById('submission-upload');
+        const fileInfo = document.getElementById('file-info');
+        const thumbnailPreview = document.getElementById('thumbnail-preview');
         const completeButton = document.getElementById('complete-button');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
@@ -550,72 +399,194 @@
 
         // --- Functions ---
 
-        function loadProgress() {
-            const savedProgress = localStorage.getItem(STORAGE_KEY);
+        function loadState() {
+            // Load Completion Status
+            const savedCompletion = localStorage.getItem(COMPLETION_STORAGE_KEY);
             try {
-                if (savedProgress) {
-                    completionStatus = JSON.parse(savedProgress);
-                    // Basic validation: ensure it's an object
-                    if (typeof completionStatus !== 'object' || completionStatus === null) {
-                        completionStatus = {};
-                    }
-                } else {
-                    completionStatus = {};
-                }
+                completionStatus = savedCompletion ? JSON.parse(savedCompletion) : {};
+                if (typeof completionStatus !== 'object' || completionStatus === null) completionStatus = {};
             } catch (e) {
-                console.error("Error parsing saved progress:", e);
-                completionStatus = {}; // Reset on error
+                console.error("Error parsing completion status:", e);
+                completionStatus = {};
             }
 
-            // Initialize missing weeks or incorrect types
+            // Load Submission Status
+            const savedSubmissions = localStorage.getItem(SUBMISSION_STORAGE_KEY);
+             try {
+                submissionStatus = savedSubmissions ? JSON.parse(savedSubmissions) : {};
+                 if (typeof submissionStatus !== 'object' || submissionStatus === null) submissionStatus = {};
+             } catch (e) {
+                 console.error("Error parsing submission status:", e);
+                 submissionStatus = {};
+             }
+
+
+            // Initialize missing weeks
             sketchingData.forEach(week => {
                 if (typeof completionStatus[week.WeekNum] !== 'boolean') {
                      completionStatus[week.WeekNum] = false;
                  }
+                 // Ensure submission entry exists, even if null
+                 if (submissionStatus[week.WeekNum] === undefined) {
+                      submissionStatus[week.WeekNum] = null; // Use null to indicate no submission
+                 }
              });
         }
 
-        function saveProgress() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus));
-            } catch (e) {
-                console.error("Error saving progress to localStorage:", e);
-                // Optionally notify the user that progress might not be saved
-            }
+        function saveData(key, data) {
+             try {
+                localStorage.setItem(key, JSON.stringify(data));
+             } catch (e) {
+                 console.error(`Error saving data for key "${key}":`, e);
+                 // Handle potential quota exceeded errors
+                 if (e.name === 'QuotaExceededError') {
+                     alert('Could not save progress. Browser local storage might be full. Try clearing some space or other site data.');
+                 }
+             }
         }
 
         function formatTextContent(text) {
             if (!text) return '';
-             // Escape HTML characters to prevent potential XSS if data source is not fully trusted
-             // text = text.replace(/</g, "<").replace(/>/g, ">");
-
-             // Convert ### Title ### to <h3>Title</h3>
-             // Using a more specific regex to avoid accidental replacements
             text = text.replace(/^### (.*?) ###$/gm, '<h3>$1</h3>');
-
-            // Handle "Try This:" specifically - make it bold, keep rest of line/paragraph normal
             text = text.replace(/^(Try This:)/gim, '<strong>$1</strong>');
-
-             // Convert \n\n+ to paragraph breaks more robustly
-             // 1. Split by multiple newlines
-             let paragraphs = text.split(/\n\n+/);
-             // 2. Process each paragraph: trim whitespace, replace single \n with <br>, wrap in <p>
-             text = paragraphs
-                 .map(p => p.trim()) // Remove leading/trailing whitespace from paragraph chunks
-                 .filter(p => p.length > 0) // Remove empty paragraphs
-                 .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`) // Convert single newlines to <br> and wrap
-                 .join(''); // Join back together
-
+            let paragraphs = text.split(/\n\n+/);
+            text = paragraphs
+                .map(p => p.trim())
+                .filter(p => p.length > 0)
+                .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+                .join('');
             return text;
         }
+
+         // Function to generate a resized thumbnail Data URL
+         function generateThumbnail(file, callback) {
+             if (!file || !file.type.startsWith('image/')) {
+                 callback(null); // Not an image file
+                 return;
+             }
+
+             const reader = new FileReader();
+             reader.onload = (e) => {
+                 const img = new Image();
+                 img.onload = () => {
+                     const canvas = document.createElement('canvas');
+                     const ctx = canvas.getContext('2d');
+
+                     let width = img.width;
+                     let height = img.height;
+
+                     if (width > THUMBNAIL_MAX_WIDTH) {
+                         height *= THUMBNAIL_MAX_WIDTH / width;
+                         width = THUMBNAIL_MAX_WIDTH;
+                     }
+                     // Could add similar check for max height if needed
+
+                     canvas.width = width;
+                     canvas.height = height;
+                     ctx.drawImage(img, 0, 0, width, height);
+
+                     // Get data URL (use jpeg for potentially smaller size than png)
+                     const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // Quality 0.8
+                     callback(dataUrl);
+                 };
+                 img.onerror = () => {
+                     console.error("Error loading image for thumbnail generation.");
+                     callback(null);
+                 };
+                 img.src = e.target.result;
+             };
+             reader.onerror = () => {
+                  console.error("Error reading file for thumbnail generation.");
+                  callback(null);
+             };
+             reader.readAsDataURL(file);
+         }
+
+
+         function handleFileUpload(event) {
+             const file = event.target.files[0];
+             const weekNum = sketchingData[currentWeekIndex].WeekNum;
+
+             if (file) {
+                 fileInfo.textContent = `Selected: ${file.name}`;
+                 thumbnailPreview.src = ""; // Clear previous preview
+                 thumbnailPreview.style.display = 'block'; // Show preview area
+
+                  generateThumbnail(file, (thumbnailDataUrl) => {
+                      if (thumbnailDataUrl) {
+                         thumbnailPreview.src = thumbnailDataUrl;
+                         submissionStatus[weekNum] = {
+                             filename: file.name,
+                             thumbnail: thumbnailDataUrl
+                         };
+                         console.log(`Generated thumbnail for week ${weekNum}, size: ${thumbnailDataUrl.length} bytes`);
+                      } else {
+                          // Failed to generate thumbnail, store only filename
+                         thumbnailPreview.style.display = 'none';
+                         fileInfo.textContent += " (Preview not available)";
+                          submissionStatus[weekNum] = {
+                             filename: file.name,
+                             thumbnail: null
+                         };
+                      }
+                       saveData(SUBMISSION_STORAGE_KEY, submissionStatus);
+                       updateCompletionButtonState(); // Update button now that submission is processed
+                  });
+
+             } else {
+                 // No file selected or selection cancelled
+                 // Only clear if there wasn't a previously saved submission
+                 if (!submissionStatus[weekNum]) {
+                     fileInfo.textContent = "No file selected.";
+                     thumbnailPreview.src = "";
+                     thumbnailPreview.style.display = 'none';
+                     submissionStatus[weekNum] = null; // Explicitly mark as no submission
+                     saveData(SUBMISSION_STORAGE_KEY, submissionStatus);
+                     updateCompletionButtonState();
+                 }
+             }
+         }
+
+        function updateCompletionButtonState() {
+            const week = sketchingData[currentWeekIndex];
+            if (!week) return;
+
+            const weekNum = week.WeekNum;
+            const isCompleted = completionStatus[weekNum];
+            const hasSubmission = submissionStatus[weekNum] !== null;
+
+            if (isCompleted) {
+                // Already complete - button allows marking incomplete
+                completeButton.textContent = 'Mark as Incomplete ✔';
+                completeButton.classList.remove('mark-complete');
+                completeButton.classList.add('mark-incomplete');
+                completeButton.disabled = false; // Can always mark incomplete
+                completeButton.setAttribute('aria-pressed', 'true');
+            } else {
+                 // Not complete yet
+                completeButton.classList.remove('mark-incomplete');
+                completeButton.classList.add('mark-complete');
+                completeButton.setAttribute('aria-pressed', 'false');
+                if (hasSubmission) {
+                    // Has submission, allow marking complete
+                    completeButton.textContent = 'Mark as Complete';
+                    completeButton.disabled = false;
+                } else {
+                    // No submission, disable completion
+                    completeButton.textContent = 'Upload Submission to Complete';
+                    completeButton.disabled = true;
+                }
+            }
+        }
+
 
         function renderWeekList() {
             weekList.innerHTML = ''; // Clear existing list
             sketchingData.forEach((week, index) => {
                 const li = document.createElement('li');
-                li.dataset.index = index; // Store index for easy lookup
-                li.setAttribute('role', 'button'); // Accessibility
-                li.setAttribute('tabindex', '0'); // Make focusable
+                li.dataset.index = index;
+                li.setAttribute('role', 'button');
+                li.setAttribute('tabindex', '0');
 
                 const titleSpan = document.createElement('span');
                 titleSpan.classList.add('week-title');
@@ -623,31 +594,27 @@
 
                 const statusSpan = document.createElement('span');
                 statusSpan.classList.add('week-status');
-                statusSpan.textContent = '✔'; // Checkmark symbol
-                statusSpan.setAttribute('aria-hidden', 'true'); // Hide decorative checkmark from screen readers
+                statusSpan.textContent = '✔';
+                statusSpan.setAttribute('aria-hidden', 'true');
 
                 li.appendChild(titleSpan);
                 li.appendChild(statusSpan);
 
                 if (index === currentWeekIndex) {
                     li.classList.add('active');
-                    li.setAttribute('aria-current', 'true'); // Accessibility
+                    li.setAttribute('aria-current', 'true');
                 }
                 if (completionStatus[week.WeekNum]) {
                     li.classList.add('completed');
-                    li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt} (Completed)`);
+                     li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt} (Completed)`);
                 } else {
                      li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt}`);
                 }
 
-
-                li.addEventListener('click', () => {
-                    navigateToWeek(index);
-                });
-                 // Allow navigation with Enter/Space keys for accessibility
+                li.addEventListener('click', () => navigateToWeek(index));
                  li.addEventListener('keydown', (e) => {
                      if (e.key === 'Enter' || e.key === ' ') {
-                         e.preventDefault(); // Prevent space bar scrolling
+                         e.preventDefault();
                          navigateToWeek(index);
                      }
                  });
@@ -655,137 +622,105 @@
                 weekList.appendChild(li);
             });
              updateProgress();
-             // Ensure the active item is visible in the scrollable list (on desktop)
-              if (window.innerWidth > 768) { // Only auto-scroll on larger screens
+             // Scroll active item into view (desktop only)
+             if (window.innerWidth > 768) {
                  const activeItem = weekList.querySelector('.active');
                  if (activeItem) {
-                     activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                     activeItem.scrollIntoView({ behavior: 'auto', block: 'nearest' }); // Use auto for less jarring scroll on load
                  }
              }
         }
 
         function renderWeekDetail(index) {
             const week = sketchingData[index];
-            if (!week) return; // Safety check
+            if (!week) return;
 
             currentWeekIndex = index;
-            const isCompleted = completionStatus[week.WeekNum];
+            const weekNum = week.WeekNum;
+            const submission = submissionStatus[weekNum];
 
-             // Handle Google Drive/Photos links (basic attempt)
-             let imageUrl = week.ImageURL;
-             let imageHtml = '';
-             const imageContainerId = `image-container-${week.WeekNum}`; // Unique ID for image container
-
-             if (imageUrl) {
+             // --- Render Main Content ---
+             let imageHtml = ''; // Placeholder for example image display
+             const imageContainerId = `example-image-container-${weekNum}`;
+             if (week.ImageURL) { // Handle the *example* image URL
                  let processedUrl = null;
-                 if (imageUrl.includes('drive.google.com/file/d/')) {
-                    const fileIdMatch = imageUrl.match(/file\/d\/([^/]+)/);
-                    if (fileIdMatch && fileIdMatch[1]) {
-                        // Use a moderately sized thumbnail link
-                        processedUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
-                    }
-                 } else if (imageUrl.includes('photos.app.goo.gl/')) {
-                     // Google Photos links are generally not directly embeddable due to changing URLs/permissions.
-                     // We can still try, but expect it might fail often.
-                     processedUrl = imageUrl; // Use original URL, likely won't display directly
+                 if (week.ImageURL.includes('drive.google.com/file/d/')) {
+                    const fileIdMatch = week.ImageURL.match(/file\/d\/([^/]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) processedUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
+                 } else if (week.ImageURL.includes('photos.app.goo.gl/')) {
+                     processedUrl = week.ImageURL; // Might not work
                  } else {
-                     // Assume other URLs might be direct links
-                     processedUrl = imageUrl;
+                     processedUrl = week.ImageURL; // Assume direct link
                  }
 
-
-                if(processedUrl) {
-                    // Set placeholder first, try loading image via JS for better error handling
-                    imageHtml = `<div id="${imageContainerId}" class="image-placeholder">Loading image...</div>`;
-
-                    // Use JS to try loading the image after rendering HTML
-                     setTimeout(() => {
+                 if (processedUrl) {
+                    imageHtml = `<div id="${imageContainerId}" class="image-placeholder">Loading example image...</div>`;
+                     setTimeout(() => { // Load async
                          const container = document.getElementById(imageContainerId);
-                         if (!container) return; // Container might not exist if user navigated away quickly
-
+                         if (!container) return;
                          const img = new Image();
-                         img.onload = () => {
-                             img.alt = `Image for ${week.WeeklyPrompt}`;
-                             container.innerHTML = ''; // Clear placeholder text/styles
-                             container.className = 'image-loaded-container'; // Reset class
-                             container.appendChild(img);
-                         };
-                         img.onerror = () => {
-                             container.innerHTML = 'Image preview failed to load.<br>Check link or permissions.';
-                             container.className = 'image-placeholder error'; // Keep placeholder style + error indication
-                         };
-                         img.src = processedUrl;
-                     }, 0); // Run after current JS execution stack clears
-
-                } else {
-                    // Handle cases where the original URL was invalid or couldn't be processed
-                    imageHtml = `<div class="image-placeholder">Invalid or unsupported image URL format.</div>`;
-                }
-
+                         img.onload = () => { container.innerHTML = ''; container.className = 'image-loaded-container'; container.appendChild(img); };
+                         img.onerror = () => { container.innerHTML = 'Example image failed to load.'; container.className = 'image-placeholder error'; };
+                         img.src = processedUrl; img.alt = `Example for ${week.WeeklyPrompt}`;
+                     }, 0);
+                 } else {
+                    imageHtml = `<div class="image-placeholder">Invalid example image URL.</div>`;
+                 }
              } else {
-                 imageHtml = `<div class="image-placeholder">No image provided for this week.</div>`;
+                imageHtml = `<div class="image-placeholder">No example image provided.</div>`;
              }
 
 
             weekDetail.innerHTML = `
                 <h2>${week.WeeklyPrompt}</h2>
                 <div class="week-meta">
-                    <strong>Week ${week.WeekNum}</strong> | ${week.Date} | Theme: ${week.MonthlyTheme}
+                    <strong>Week ${weekNum}</strong> | ${week.Date} | Theme: ${week.MonthlyTheme}
                 </div>
-
-                ${week.EncouragementMessage ? `
-                    <div class="encouragement-container">
-                        ${formatTextContent(week.EncouragementMessage)}
-                    </div>` : ''}
-
-                ${week.TryThis ? `
-                    <div class="trythis-container">
-                         ${formatTextContent(week.TryThis)}
-                     </div>` : ''}
-
-                ${imageHtml}
+                ${week.EncouragementMessage ? `<div class="encouragement-container">${formatTextContent(week.EncouragementMessage)}</div>` : ''}
+                ${week.TryThis ? `<div class="trythis-container">${formatTextContent(week.TryThis)}</div>` : ''}
+                ${imageHtml} <!-- Example image display -->
             `;
 
-            // Update display and buttons
-            currentWeekDisplay.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
+            // --- Render Submission Section ---
+            submissionSection.style.display = 'block'; // Show submission area
+            if (submission) {
+                fileInfo.textContent = `Submitted: ${submission.filename}`;
+                if (submission.thumbnail) {
+                    thumbnailPreview.src = submission.thumbnail;
+                    thumbnailPreview.style.display = 'block';
+                } else {
+                    thumbnailPreview.src = "";
+                    thumbnailPreview.style.display = 'none';
+                }
+            } else {
+                fileInfo.textContent = 'No file selected.';
+                thumbnailPreview.src = "";
+                thumbnailPreview.style.display = 'none';
+            }
+             // Reset file input value visually (doesn't clear the actual selected file if user navigates away and back)
+             fileInput.value = null;
+
+
+            // --- Update Global UI Elements ---
+            currentWeekDisplay.textContent = `Wk ${weekNum}: ${week.WeeklyPrompt}`;
             prevButton.disabled = index === 0;
             nextButton.disabled = index === totalWeeks - 1;
-            completeButton.disabled = false; // Enable completion button
+            updateCompletionButtonState(); // Update based on loaded submission/completion status
 
-            // Update completion button state and ARIA attribute
-            if (isCompleted) {
-                completeButton.textContent = 'Mark as Incomplete ✔';
-                completeButton.classList.remove('mark-complete');
-                completeButton.classList.add('mark-incomplete');
-                completeButton.setAttribute('aria-pressed', 'true');
-            } else {
-                completeButton.textContent = 'Mark as Complete';
-                completeButton.classList.remove('mark-incomplete');
-                completeButton.classList.add('mark-complete');
-                completeButton.setAttribute('aria-pressed', 'false');
-            }
 
-            // Update sidebar active state and ARIA attributes
+            // Update sidebar active state
             const currentActive = weekList.querySelector('.active');
-            if (currentActive) {
-                currentActive.classList.remove('active');
-                currentActive.removeAttribute('aria-current');
-            }
+            if (currentActive) currentActive.classList.remove('active');
             const newActive = weekList.querySelector(`li[data-index="${index}"]`);
-            if (newActive) {
-                newActive.classList.add('active');
-                newActive.setAttribute('aria-current', 'true');
-            }
+            if (newActive) newActive.classList.add('active');
 
-             // Scroll content area to top on navigation
-             contentScrollArea.scrollTop = 0;
+            contentScrollArea.scrollTop = 0; // Scroll content to top
         }
 
         function navigateToWeek(index) {
             if (index >= 0 && index < totalWeeks) {
                 renderWeekDetail(index);
-                // Update the list rendering to show the new active state immediately
-                 renderWeekList();
+                renderWeekList(); // Ensure list reflects active state correctly
             }
         }
 
@@ -793,56 +728,44 @@
             const week = sketchingData[currentWeekIndex];
             if (!week) return;
 
-            completionStatus[week.WeekNum] = !completionStatus[week.WeekNum];
-            saveProgress();
-            renderWeekDetail(currentWeekIndex); // Re-render detail to update button
-            renderWeekList(); // Re-render list to update checkmark/style and progress
+            // Only allow toggling if the button isn't disabled (which means submission exists if marking complete)
+             if (!completeButton.disabled) {
+                 completionStatus[week.WeekNum] = !completionStatus[week.WeekNum];
+                 saveData(COMPLETION_STORAGE_KEY, completionStatus);
+                 updateCompletionButtonState(); // Update button text/state
+                 renderWeekList(); // Update list style and progress bar
+             }
         }
 
         function updateProgress() {
              const completedCount = Object.values(completionStatus).filter(status => status === true).length;
              const progressPercent = totalWeeks > 0 ? (completedCount / totalWeeks) * 100 : 0;
-
              progressText.textContent = `Your Progress: ${completedCount} / ${totalWeeks}`;
              progressBar.style.width = `${progressPercent}%`;
          }
 
         // --- Event Listeners ---
-        prevButton.addEventListener('click', () => {
-            navigateToWeek(currentWeekIndex - 1);
+        startButton.addEventListener('click', () => {
+            welcomeOverlay.classList.add('hidden');
         });
 
-        nextButton.addEventListener('click', () => {
-            navigateToWeek(currentWeekIndex + 1);
-        });
-
+        prevButton.addEventListener('click', () => navigateToWeek(currentWeekIndex - 1));
+        nextButton.addEventListener('click', () => navigateToWeek(currentWeekIndex + 1));
         completeButton.addEventListener('click', toggleCompletion);
+        fileInput.addEventListener('change', handleFileUpload);
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-             loadProgress();
-             renderWeekList(); // Render list first
+             loadState(); // Load both completion and submission states
+             renderWeekList(); // Render sidebar list
 
-             // Check if there's a last viewed week stored, otherwise default to 0
-             // Example: could store last viewed index in localStorage too
+             // Determine initial week (e.g., first incomplete)
              let initialWeek = 0;
-             // Find first incomplete week to start on (optional)
              const firstIncompleteIndex = sketchingData.findIndex(w => !completionStatus[w.WeekNum]);
-             if(firstIncompleteIndex !== -1) {
-                initialWeek = firstIncompleteIndex;
-             }
+             if(firstIncompleteIndex !== -1) initialWeek = firstIncompleteIndex;
 
-             navigateToWeek(initialWeek); // Load the determined initial week
-             updateProgress(); // Initial progress update based on loaded status
-
-             // Add focus styling for keyboard navigation (optional but good for a11y)
-            document.body.addEventListener('mousedown', () => document.body.classList.add('using-mouse'));
-            document.body.addEventListener('keydown', (e) => {
-                 if (e.key === 'Tab') {
-                     document.body.classList.remove('using-mouse');
-                 }
-             });
-
+             navigateToWeek(initialWeek); // Load the initial week details
+             updateProgress(); // Update progress bar based on loaded state
         });
 
     </script>
