@@ -18,6 +18,13 @@
             --sidebar-width: 280px;
         }
 
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
         body {
             margin: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -25,7 +32,8 @@
             color: var(--text-color);
             display: flex;
             height: 100vh;
-            overflow: hidden; /* Prevent body scrolling */
+            overflow: hidden; /* Prevent body scrolling on desktop */
+            font-size: 16px; /* Base font size for desktop */
         }
 
         .course-container {
@@ -52,19 +60,21 @@
             background-color: var(--primary-color);
             color: white;
             text-align: center;
+            flex-shrink: 0; /* Prevent shrinking */
         }
 
         .sidebar-header h2 {
             margin: 0;
-            font-size: 1.3em;
+            font-size: 1.2em; /* Adjusted relative size */
             font-weight: 500;
         }
 
         #progress-indicator {
             padding: 12px 15px;
-            font-size: 0.9em;
+            font-size: 0.85em; /* Adjusted relative size */
             background-color: var(--secondary-color);
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; /* Prevent shrinking */
         }
          #progress-text {
              margin-bottom: 8px;
@@ -96,6 +106,7 @@
             margin: 0;
             overflow-y: auto; /* Enable scrolling for the list */
             flex-grow: 1; /* Allow list to take remaining space */
+            -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
         }
 
         #week-list li {
@@ -103,7 +114,7 @@
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background-color 0.2s, border-left-color 0.2s;
-            font-size: 0.95em;
+            font-size: 0.9em; /* Adjusted relative size */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -133,14 +144,21 @@
         }
 
         #week-list li .week-status {
-            font-size: 1.1em; /* Checkmark size */
+            font-size: 1.1em; /* Checkmark size relative to li font-size */
             margin-left: 10px;
             color: transparent; /* Hide by default */
             font-weight: bold;
+            flex-shrink: 0; /* Prevent checkmark from shrinking */
         }
         #week-list li.completed .week-status {
              color: var(--completed-text); /* Show checkmark */
         }
+         #week-list li .week-title {
+             overflow: hidden; /* Prevent long titles causing issues */
+             text-overflow: ellipsis; /* Add ellipsis for overflow */
+             white-space: nowrap; /* Keep title on one line */
+             margin-right: 5px; /* Space between title and checkmark */
+         }
 
 
         /* --- Main Content Area --- */
@@ -149,7 +167,7 @@
             display: flex;
             flex-direction: column; /* Stack navigation and content */
             height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Prevent main content overflow issues */
+            overflow: hidden; /* Prevent main content overflow issues on desktop */
         }
 
         .main-header {
@@ -161,6 +179,12 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0; /* Prevent header from shrinking */
+            position: relative; /* Context for z-index if needed */
+            z-index: 10; /* Keep header above potentially complex content */
+        }
+        .main-header .navigation {
+             display: flex; /* Keep nav buttons together */
+             gap: 10px; /* Space between prev/next if needed */
         }
 
         .navigation button {
@@ -171,8 +195,8 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.2s, opacity 0.2s;
-            font-size: 0.9em;
-            margin: 0 5px; /* Spacing between buttons */
+            font-size: 0.9em; /* Adjusted relative size */
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
         .navigation button:hover:not(:disabled) {
@@ -185,12 +209,15 @@
          }
 
         #current-week-display {
-            font-size: 1.1em;
+            font-size: 1.05em; /* Adjusted relative size */
             font-weight: 500;
             color: var(--text-color);
             text-align: center;
             flex-grow: 1; /* Take available space */
             margin: 0 15px; /* Space around title */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .content-scroll-area {
@@ -198,23 +225,25 @@
              overflow-y: auto; /* Enable scrolling ONLY for this area */
              padding: 25px 30px; /* Padding inside the scroll area */
              background-color: #fdfdfd; /* Slightly off-white background for content */
+             -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
         }
 
 
         #week-detail h2 {
             margin-top: 0;
             color: var(--primary-color);
-            font-size: 1.8em;
+            font-size: 1.7em; /* Adjusted relative size */
             margin-bottom: 8px;
             font-weight: 600;
+            line-height: 1.3;
         }
         #week-detail .week-meta {
-            font-size: 0.95em;
+            font-size: 0.9em; /* Adjusted relative size */
             color: var(--light-text);
             margin-bottom: 25px;
         }
          #week-detail h3 { /* Style for Encouragement/TryThis titles */
-            font-size: 1.4em;
+            font-size: 1.3em; /* Adjusted relative size */
             color: var(--text-color);
             margin-top: 30px;
             margin-bottom: 15px;
@@ -234,14 +263,14 @@
         }
 
         /* Specific styling for sections */
-        .encouragement-text, .trythis-text {
+        .encouragement-container, .trythis-container {
             background-color: #ffffff;
             padding: 15px 20px;
             border-radius: 5px;
             border: 1px solid var(--border-color);
             margin-top: 10px; /* Space below the heading */
         }
-        .encouragement-text p:last-child, .trythis-text p:last-child {
+        .encouragement-container p:last-child, .trythis-container p:last-child {
              margin-bottom: 0; /* Remove extra margin at the end */
          }
 
@@ -266,11 +295,12 @@
 
         #complete-button {
             padding: 10px 25px;
-            font-size: 1em;
+            font-size: 1em; /* Keep button size consistent */
             border-radius: 5px;
             cursor: pointer;
             border: 1px solid;
             transition: background-color 0.2s, color 0.2s;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
 
         #complete-button.mark-complete {
@@ -309,41 +339,95 @@
             padding: 20px;
         }
 
-        /* Responsive adjustments (optional but good practice) */
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             body {
+                /* Stack elements vertically */
                 flex-direction: column;
-                height: auto;
-                overflow: auto; /* Allow body scroll on small screens */
+                height: auto; /* Allow body to grow */
+                overflow-y: auto; /* Enable scrolling for the whole page */
+                font-size: 15px; /* Slightly smaller base font for mobile */
             }
+            .course-container {
+                 flex-direction: column;
+                 height: auto; /* Allow container to grow */
+            }
+
             .sidebar {
-                width: 100%;
-                height: auto; /* Adjust height */
-                max-height: 40vh; /* Limit sidebar height */
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-                overflow: hidden; /* Hide internal scrollbars initially */
-                display: block; /* Override flex */
+                width: 100%; /* Full width */
+                height: auto; /* Let content determine height */
+                /* Set a max-height to prevent it taking too much space initially */
+                max-height: 40vh; /* Max 40% of viewport height */
+                border-right: none; /* Remove side border */
+                border-bottom: 1px solid var(--border-color); /* Add bottom border */
+                flex-shrink: 0; /* Prevent shrinking */
             }
-             .sidebar-header, #progress-indicator {
-                 /* Adjust padding maybe */
-             }
+
+             .sidebar-header { padding: 12px 15px; }
+             #progress-indicator { padding: 10px 15px; }
+
             #week-list {
-                 max-height: calc(40vh - 50px - 60px); /* Adjust based on header/progress height */
-                 overflow-y: auto;
+                 /* Already set to flex-grow: 1 and overflow: auto */
+                 /* It will take space within the sidebar's max-height */
             }
+
             .main-content {
                  height: auto; /* Let content determine height */
-                 overflow: visible; /* Remove internal scroll */
+                 overflow: visible; /* Remove internal fixed height/scroll */
+                 width: 100%; /* Ensure full width */
+                 /* No flex-grow needed as body scrolls */
             }
+
             .main-header {
-                padding: 10px 15px;
+                padding: 10px 15px; /* Adjust padding */
+                flex-wrap: wrap; /* Allow wrapping */
+                justify-content: center; /* Center items when wrapped */
+                gap: 8px; /* Add gap between items */
             }
+             #current-week-display {
+                 order: -1; /* Move title above buttons */
+                 width: 100%; /* Make title take full width */
+                 text-align: center;
+                 margin: 0 0 5px 0; /* Remove side margins, add bottom margin */
+                 font-size: 1.1em; /* Slightly larger title on mobile */
+             }
+             .main-header .navigation {
+                 /* Ensure buttons are side-by-side and take full width */
+                 display: flex;
+                 justify-content: space-between; /* Space out Prev/Next */
+                 width: 100%;
+             }
+              .navigation button {
+                  padding: 8px 12px; /* Slightly smaller padding */
+                  flex-grow: 1; /* Allow buttons to grow */
+                  flex-basis: 0; /* Distribute space evenly */
+                  margin: 0 4px; /* Small gap between buttons */
+              }
+
+
             .content-scroll-area {
-                padding: 15px;
-                overflow-y: visible; /* Remove internal scroll */
+                padding: 15px 15px 25px 15px; /* Adjust padding */
+                overflow-y: visible; /* Let body scroll */
             }
+
+             /* Adjust content font sizes */
+             #week-detail h2 { font-size: 1.5em; }
+             #week-detail h3 { font-size: 1.2em; }
+             #complete-button { font-size: 0.95em; padding: 10px 20px; }
+        }
+
+        @media (max-width: 480px) {
+            /* Further adjustments for very small screens */
+             body { font-size: 14px; }
+             .sidebar-header h2 { font-size: 1.1em; }
+             #week-list li { font-size: 0.85em; padding: 8px 12px; }
+             .main-header { padding: 8px 10px; gap: 5px; }
+             #current-week-display { font-size: 1em; }
+             .navigation button { padding: 6px 10px; font-size: 0.85em;}
+             .content-scroll-area { padding: 10px 10px 20px 10px; }
+             #week-detail h2 { font-size: 1.4em; }
+             #week-detail h3 { font-size: 1.15em; }
+             #complete-button { font-size: 0.9em; padding: 8px 15px; }
         }
 
     </style>
@@ -381,7 +465,7 @@
             <div class="content-scroll-area">
                  <div id="week-detail">
                      <!-- Current week details will be loaded here -->
-                     <p>Select a week from the list to get started.</p>
+                     <p class="initial-message" style="text-align: center; margin-top: 30px; color: var(--light-text);">Select a week from the list above to get started.</p>
                  </div>
                   <div class="completion-toggle">
                       <button id="complete-button" disabled>Mark as Complete</button>
@@ -391,7 +475,7 @@
     </div>
 
     <script>
-        // --- Data --- (Embed your data here)
+        // --- Data --- (Embed your data here - Same as previous version)
         const sketchingData = [
             { Month: "M01 - Apr", Date: "Fri 28 Mar 25", WeekNum: "01", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Early Signs of Spring", EncouragementMessage: "### Spring Awakening ###\nSpring is here! A new season of sketching begins, full of fresh colours, blooming flowers, and the return of life to the landscape.\n\nNature is waking up—so should your sketchbook! Look for the small but powerful signs of spring: the first blossoms, greener landscapes, or even the changing mood of the sky. Notice how the light softens as the days grow longer, casting warmer tones and creating fresh contrasts in the environment.\n\nThis week’s challenge: Go for a walk—whether in a park, a garden, or even a city street—and observe the early signs of spring. Sketch what catches your eye, whether it’s a delicate flower pushing through the ground, raindrops clinging to new leaves, or birds returning to nest.\n\nPost your sketches in the Facebook group—let’s celebrate the season together!\n\nHappy sketching!", TryThis: "Try This: Use watercolours or coloured pencils to layer soft, fresh tones. \nCapture delicate textures with light, feathery strokes. Experiment with sketching outdoors, even if only for a few minutes, to observe real-time seasonal changes.", ImageURL: "https://photos.app.goo.gl/MUhcG7fwLY1m3z546" },
             { Month: "M01 - Apr", Date: "Fri 04 Apr 25", WeekNum: "02", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Blossoms & New Growth", EncouragementMessage: "Blossoms and buds are appearing everywhere—sketch them up close or as part of a wider scene. Notice how petals catch the light, creating soft, glowing edges. Observe the subtle shifts in colour, from pale buds to vibrant flowers in full bloom.\n\nThis week’s challenge: Choose a tree or plant with blossoms and sketch its transformation. Try different perspectives—zoom in on a single flower, or capture the overall shape of branches laden with new growth.\n\nDon’t worry about every detail—focus on capturing the essence of spring’s renewal.\n\nShare your sketches in the Facebook group—let’s bring the beauty of blossoms to life!", TryThis: "Try This: Experiment with ink and a fine brush to create delicate, flowing lines. \nUse negative space to let blossoms 'breathe' in your composition. Try using different shades of green and pink to reflect the soft pastels of spring.", ImageURL: "https://photos.app.goo.gl/fWsPEPeEWk5dXPkW8" },
@@ -468,36 +552,59 @@
 
         function loadProgress() {
             const savedProgress = localStorage.getItem(STORAGE_KEY);
-            if (savedProgress) {
-                completionStatus = JSON.parse(savedProgress);
-            } else {
-                // Initialize if no saved data
-                sketchingData.forEach(week => {
-                    completionStatus[week.WeekNum] = false;
-                });
+            try {
+                if (savedProgress) {
+                    completionStatus = JSON.parse(savedProgress);
+                    // Basic validation: ensure it's an object
+                    if (typeof completionStatus !== 'object' || completionStatus === null) {
+                        completionStatus = {};
+                    }
+                } else {
+                    completionStatus = {};
+                }
+            } catch (e) {
+                console.error("Error parsing saved progress:", e);
+                completionStatus = {}; // Reset on error
             }
-            // Ensure all weeks exist in the status object (in case data changes)
-             sketchingData.forEach(week => {
-                if (completionStatus[week.WeekNum] === undefined) {
+
+            // Initialize missing weeks or incorrect types
+            sketchingData.forEach(week => {
+                if (typeof completionStatus[week.WeekNum] !== 'boolean') {
                      completionStatus[week.WeekNum] = false;
                  }
              });
-
         }
 
         function saveProgress() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus));
+            } catch (e) {
+                console.error("Error saving progress to localStorage:", e);
+                // Optionally notify the user that progress might not be saved
+            }
         }
 
         function formatTextContent(text) {
             if (!text) return '';
-            // Convert ### Title ### to <h3>Title</h3>
-            text = text.replace(/### (.*?) ###/g, '<h3>$1</h3>');
-            // Keep "Try This:" bold but within the paragraph/div context
+             // Escape HTML characters to prevent potential XSS if data source is not fully trusted
+             // text = text.replace(/</g, "<").replace(/>/g, ">");
+
+             // Convert ### Title ### to <h3>Title</h3>
+             // Using a more specific regex to avoid accidental replacements
+            text = text.replace(/^### (.*?) ###$/gm, '<h3>$1</h3>');
+
+            // Handle "Try This:" specifically - make it bold, keep rest of line/paragraph normal
             text = text.replace(/^(Try This:)/gim, '<strong>$1</strong>');
-             // Convert \n\n to paragraph breaks
+
+             // Convert \n\n+ to paragraph breaks more robustly
+             // 1. Split by multiple newlines
              let paragraphs = text.split(/\n\n+/);
-             text = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join(''); // Wrap in <p>, convert single \n within paragraphs to <br>
+             // 2. Process each paragraph: trim whitespace, replace single \n with <br>, wrap in <p>
+             text = paragraphs
+                 .map(p => p.trim()) // Remove leading/trailing whitespace from paragraph chunks
+                 .filter(p => p.length > 0) // Remove empty paragraphs
+                 .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`) // Convert single newlines to <br> and wrap
+                 .join(''); // Join back together
 
             return text;
         }
@@ -507,6 +614,8 @@
             sketchingData.forEach((week, index) => {
                 const li = document.createElement('li');
                 li.dataset.index = index; // Store index for easy lookup
+                li.setAttribute('role', 'button'); // Accessibility
+                li.setAttribute('tabindex', '0'); // Make focusable
 
                 const titleSpan = document.createElement('span');
                 titleSpan.classList.add('week-title');
@@ -515,29 +624,43 @@
                 const statusSpan = document.createElement('span');
                 statusSpan.classList.add('week-status');
                 statusSpan.textContent = '✔'; // Checkmark symbol
+                statusSpan.setAttribute('aria-hidden', 'true'); // Hide decorative checkmark from screen readers
 
                 li.appendChild(titleSpan);
                 li.appendChild(statusSpan);
 
-
                 if (index === currentWeekIndex) {
                     li.classList.add('active');
+                    li.setAttribute('aria-current', 'true'); // Accessibility
                 }
                 if (completionStatus[week.WeekNum]) {
                     li.classList.add('completed');
+                    li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt} (Completed)`);
+                } else {
+                     li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt}`);
                 }
+
 
                 li.addEventListener('click', () => {
                     navigateToWeek(index);
                 });
+                 // Allow navigation with Enter/Space keys for accessibility
+                 li.addEventListener('keydown', (e) => {
+                     if (e.key === 'Enter' || e.key === ' ') {
+                         e.preventDefault(); // Prevent space bar scrolling
+                         navigateToWeek(index);
+                     }
+                 });
 
                 weekList.appendChild(li);
             });
              updateProgress();
-             // Ensure the active item is visible in the scrollable list
-             const activeItem = weekList.querySelector('.active');
-             if (activeItem) {
-                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+             // Ensure the active item is visible in the scrollable list (on desktop)
+              if (window.innerWidth > 768) { // Only auto-scroll on larger screens
+                 const activeItem = weekList.querySelector('.active');
+                 if (activeItem) {
+                     activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                 }
              }
         }
 
@@ -548,27 +671,55 @@
             currentWeekIndex = index;
             const isCompleted = completionStatus[week.WeekNum];
 
-             // Handle Google Drive links - requires transformation for direct display
+             // Handle Google Drive/Photos links (basic attempt)
              let imageUrl = week.ImageURL;
              let imageHtml = '';
+             const imageContainerId = `image-container-${week.WeekNum}`; // Unique ID for image container
+
              if (imageUrl) {
-                 if (imageUrl.includes('drive.google.com')) {
+                 let processedUrl = null;
+                 if (imageUrl.includes('drive.google.com/file/d/')) {
                     const fileIdMatch = imageUrl.match(/file\/d\/([^/]+)/);
                     if (fileIdMatch && fileIdMatch[1]) {
-                        // Use a thumbnail link (adjust size w=XXX)
-                        imageUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
-                    } else {
-                         imageUrl = null; // Parsing failed
+                        // Use a moderately sized thumbnail link
+                        processedUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
                     }
+                 } else if (imageUrl.includes('photos.app.goo.gl/')) {
+                     // Google Photos links are generally not directly embeddable due to changing URLs/permissions.
+                     // We can still try, but expect it might fail often.
+                     processedUrl = imageUrl; // Use original URL, likely won't display directly
+                 } else {
+                     // Assume other URLs might be direct links
+                     processedUrl = imageUrl;
                  }
-                 // Basic handling for Google Photos links (often restricted)
-                 // No reliable transformation usually available.
 
-                if(imageUrl) {
-                    imageHtml = `<img src="${imageUrl}" alt="Image for ${week.WeeklyPrompt}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                 <div class="image-placeholder" style="display: none;">Image preview failed to load. Check link/permissions.</div>`;
+
+                if(processedUrl) {
+                    // Set placeholder first, try loading image via JS for better error handling
+                    imageHtml = `<div id="${imageContainerId}" class="image-placeholder">Loading image...</div>`;
+
+                    // Use JS to try loading the image after rendering HTML
+                     setTimeout(() => {
+                         const container = document.getElementById(imageContainerId);
+                         if (!container) return; // Container might not exist if user navigated away quickly
+
+                         const img = new Image();
+                         img.onload = () => {
+                             img.alt = `Image for ${week.WeeklyPrompt}`;
+                             container.innerHTML = ''; // Clear placeholder text/styles
+                             container.className = 'image-loaded-container'; // Reset class
+                             container.appendChild(img);
+                         };
+                         img.onerror = () => {
+                             container.innerHTML = 'Image preview failed to load.<br>Check link or permissions.';
+                             container.className = 'image-placeholder error'; // Keep placeholder style + error indication
+                         };
+                         img.src = processedUrl;
+                     }, 0); // Run after current JS execution stack clears
+
                 } else {
-                     imageHtml = `<div class="image-placeholder">Could not parse image URL.</div>`;
+                    // Handle cases where the original URL was invalid or couldn't be processed
+                    imageHtml = `<div class="image-placeholder">Invalid or unsupported image URL format.</div>`;
                 }
 
              } else {
@@ -596,27 +747,35 @@
             `;
 
             // Update display and buttons
-            currentWeekDisplay.textContent = `Week ${week.WeekNum}: ${week.WeeklyPrompt}`;
+            currentWeekDisplay.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
             prevButton.disabled = index === 0;
             nextButton.disabled = index === totalWeeks - 1;
-            completeButton.disabled = false; // Enable completion button once a week is loaded
+            completeButton.disabled = false; // Enable completion button
 
-            // Update completion button state
+            // Update completion button state and ARIA attribute
             if (isCompleted) {
                 completeButton.textContent = 'Mark as Incomplete ✔';
                 completeButton.classList.remove('mark-complete');
                 completeButton.classList.add('mark-incomplete');
+                completeButton.setAttribute('aria-pressed', 'true');
             } else {
                 completeButton.textContent = 'Mark as Complete';
                 completeButton.classList.remove('mark-incomplete');
                 completeButton.classList.add('mark-complete');
+                completeButton.setAttribute('aria-pressed', 'false');
             }
 
-            // Update sidebar active state
+            // Update sidebar active state and ARIA attributes
             const currentActive = weekList.querySelector('.active');
-            if (currentActive) currentActive.classList.remove('active');
+            if (currentActive) {
+                currentActive.classList.remove('active');
+                currentActive.removeAttribute('aria-current');
+            }
             const newActive = weekList.querySelector(`li[data-index="${index}"]`);
-            if (newActive) newActive.classList.add('active');
+            if (newActive) {
+                newActive.classList.add('active');
+                newActive.setAttribute('aria-current', 'true');
+            }
 
              // Scroll content area to top on navigation
              contentScrollArea.scrollTop = 0;
@@ -625,6 +784,8 @@
         function navigateToWeek(index) {
             if (index >= 0 && index < totalWeeks) {
                 renderWeekDetail(index);
+                // Update the list rendering to show the new active state immediately
+                 renderWeekList();
             }
         }
 
@@ -659,11 +820,29 @@
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadProgress();
-            renderWeekList();
-            // Load the first week by default, or the last viewed (optional)
-            navigateToWeek(currentWeekIndex); // Start at week 0
-             updateProgress(); // Initial progress update
+             loadProgress();
+             renderWeekList(); // Render list first
+
+             // Check if there's a last viewed week stored, otherwise default to 0
+             // Example: could store last viewed index in localStorage too
+             let initialWeek = 0;
+             // Find first incomplete week to start on (optional)
+             const firstIncompleteIndex = sketchingData.findIndex(w => !completionStatus[w.WeekNum]);
+             if(firstIncompleteIndex !== -1) {
+                initialWeek = firstIncompleteIndex;
+             }
+
+             navigateToWeek(initialWeek); // Load the determined initial week
+             updateProgress(); // Initial progress update based on loaded status
+
+             // Add focus styling for keyboard navigation (optional but good for a11y)
+            document.body.addEventListener('mousedown', () => document.body.classList.add('using-mouse'));
+            document.body.addEventListener('keydown', (e) => {
+                 if (e.key === 'Tab') {
+                     document.body.classList.remove('using-mouse');
+                 }
+             });
+
         });
 
     </script>
