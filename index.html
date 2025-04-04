@@ -1,176 +1,311 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const lectures = document.querySelectorAll('.lecture-item');
-    const modal = document.getElementById('videoModal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalVideo = document.getElementById('modal-video');
-    const modalDescription = document.getElementById('modal-description');
-    const closeButton = document.querySelector('.close-button');
-    const markCompleteButton = document.getElementById('mark-complete-button');
-    let currentLectureElement = null; // To keep track of which lecture is open
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Course Content</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    // --- Local Storage for Progress Tracking ---
-    const completedLectures = JSON.parse(localStorage.getItem('completedLectures')) || {};
+    <div class="course-container">
+        <h1>Web Development Fundamentals</h1>
 
-    // Function to update the status display on the page load
-    function updateStatusDisplay() {
-        lectures.forEach(lecture => {
-            const lectureId = lecture.dataset.id;
-            const statusElement = lecture.querySelector('.lecture-status');
-            if (completedLectures[lectureId]) {
-                statusElement.textContent = 'Completed';
-                statusElement.classList.add('completed');
-                lecture.classList.add('completed'); // Add class to the lecture item itself if needed
-            } else {
-                statusElement.textContent = 'Not Started';
-                statusElement.classList.remove('completed');
-                lecture.classList.remove('completed');
+        <div class="progress-tracker">
+            <h3>Course Progress</h3>
+            <div class="progress-bar-container">
+                <div id="progress-bar-fill"></div>
+            </div>
+            <p id="progress-text">0 / 9 lectures completed (0%)</p>
+        </div>
+
+        <div class="course-section">
+            <h2>Module 1: Introduction & Setup</h2>
+            <div class="lecture-item" data-id="intro-welcome">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Welcome to the Course!</div>
+                    <div class="lecture-details">Introduction and overview</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+            <div class="lecture-item" data-id="setup-environment">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Setting Up Your Development Environment</div>
+                    <div class="lecture-details">Installing tools</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+        </div>
+
+        <div class="course-section">
+            <h2>Module 2: Core Technologies</h2>
+            <div class="lecture-item" data-id="html-basics">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">HTML Fundamentals</div>
+                    <div class="lecture-details">Tags, elements, structure</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+            <div class="lecture-item" data-id="css-styling">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Styling with CSS</div>
+                    <div class="lecture-details">Selectors, properties, layout</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+             <div class="lecture-item" data-id="js-intro">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Introduction to JavaScript</div>
+                    <div class="lecture-details">Variables, functions, basics</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+             <div class="lecture-item" data-id="dom-manipulation">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Manipulating the DOM</div>
+                    <div class="lecture-details">Interacting with HTML</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+        </div>
+
+         <div class="course-section">
+            <h2>Module 3: Tools & Deployment</h2>
+             <div class="lecture-item" data-id="git-basics">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Version Control with Git</div>
+                    <div class="lecture-details">Tracking changes</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+            <div class="lecture-item" data-id="deploying-app">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Deploying Your Application</div>
+                    <div class="lecture-details">Getting your site online</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+        </div>
+
+        <div class="course-section">
+            <h2>Module 4: Conclusion</h2>
+             <div class="lecture-item" data-id="next-steps">
+                <img src="play-icon.png" alt="Play Icon">
+                <div class="lecture-info">
+                    <div class="lecture-title">Next Steps and Further Learning</div>
+                    <div class="lecture-details">Continuing your journey</div>
+                </div>
+                <div class="lecture-status">Not Started</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- The Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <h2 id="modal-title">Lecture Title</h2>
+            <iframe id="modal-video" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p id="modal-description">Lecture description goes here.</p>
+            <button id="mark-complete-button">Mark as Complete</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const lectures = document.querySelectorAll('.lecture-item');
+            const modal = document.getElementById('videoModal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalVideo = document.getElementById('modal-video');
+            const modalDescription = document.getElementById('modal-description');
+            const closeButton = document.querySelector('.close-button');
+            const markCompleteButton = document.getElementById('mark-complete-button');
+            let currentLectureElement = null; // To keep track of which lecture is open
+
+            // --- Local Storage for Progress Tracking ---
+            const completedLectures = JSON.parse(localStorage.getItem('completedLectures')) || {};
+
+            // --- Data Structure (Keep this in your script tag for now) ---
+            // In a real application, you'd likely load this from a server or a separate JSON file
+            const lectureDataMap = {
+                "intro-welcome": {
+                    title: "Welcome to the Course!",
+                    description: "An introduction to the course structure, goals, and what you'll learn.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "setup-environment": {
+                    title: "Setting Up Your Development Environment",
+                    description: "Learn how to install the necessary software and tools for this course.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "html-basics": {
+                    title: "HTML Fundamentals",
+                    description: "Understanding the core building blocks of web pages: tags, elements, and attributes.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "css-styling": {
+                    title: "Styling with CSS",
+                    description: "Learn how to add styles, colors, layouts, and make your web pages visually appealing.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "js-intro": {
+                    title: "Introduction to JavaScript",
+                    description: "Getting started with the language of the web: variables, data types, and basic logic.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "dom-manipulation": {
+                    title: "Manipulating the DOM",
+                    description: "Learn how JavaScript interacts with HTML elements to create dynamic web pages.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                 "git-basics": {
+                    title: "Version Control with Git",
+                    description: "Understanding the fundamentals of Git for tracking changes and collaborating.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "deploying-app": {
+                    title: "Deploying Your Application",
+                    description: "Learn how to put your web application online for the world to see.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                },
+                "next-steps": {
+                    title: "Next Steps and Further Learning",
+                    description: "Where to go from here? Resources and suggestions for continuing your web development journey.",
+                    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
+                }
+                // Add more lecture data objects here as needed
+            };
+
+            // Function to update the status display on the page load
+            function updateStatusDisplay() {
+                lectures.forEach(lecture => {
+                    const lectureId = lecture.dataset.id;
+                    const statusElement = lecture.querySelector('.lecture-status');
+                    if (completedLectures[lectureId]) {
+                        statusElement.textContent = 'Completed';
+                        statusElement.classList.add('completed');
+                        lecture.classList.add('completed'); // Add class to the lecture item itself if needed
+                    } else {
+                        statusElement.textContent = 'Not Started';
+                        statusElement.classList.remove('completed');
+                        lecture.classList.remove('completed');
+                    }
+                });
+                updateProgress(); // Update the progress bar
             }
-        });
-        updateProgress(); // Update the progress bar
-    }
 
-    // Function to update the overall progress bar
-    function updateProgress() {
-        const totalLectures = lectures.length;
-        const completedCount = Object.keys(completedLectures).length;
-        const progressPercentage = totalLectures > 0 ? (completedCount / totalLectures) * 100 : 0;
-        const progressBar = document.getElementById('progress-bar-fill');
-        const progressText = document.getElementById('progress-text');
+            // Function to update the overall progress bar
+            function updateProgress() {
+                const totalLectures = lectures.length;
+                const completedCount = Object.keys(completedLectures).length;
+                const progressPercentage = totalLectures > 0 ? (completedCount / totalLectures) * 100 : 0;
+                const progressBar = document.getElementById('progress-bar-fill');
+                const progressText = document.getElementById('progress-text');
 
-        progressBar.style.width = progressPercentage + '%';
-        progressText.textContent = `${completedCount} / ${totalLectures} lectures completed (${Math.round(progressPercentage)}%)`;
-    }
+                if (progressBar && progressText) { // Check if elements exist
+                    progressBar.style.width = progressPercentage + '%';
+                    progressText.textContent = `${completedCount} / ${totalLectures} lectures completed (${Math.round(progressPercentage)}%)`;
+                }
+            }
 
-    // --- Event Listeners ---
+            // --- Event Listeners ---
 
-    lectures.forEach(lecture => {
-        lecture.addEventListener('click', () => {
-            currentLectureElement = lecture; // Store the clicked lecture element
-            const lectureData = lectureDataMap[lecture.dataset.id]; // Get data using the ID
+            lectures.forEach(lecture => {
+                lecture.addEventListener('click', () => {
+                    currentLectureElement = lecture; // Store the clicked lecture element
+                    const lectureId = lecture.dataset.id;
+                    const lectureData = lectureDataMap[lectureId]; // Get data using the ID
 
-            if (lectureData) {
-                modalTitle.textContent = lectureData.title;
-                // Use the iframe embed code for YouTube
-                modalVideo.src = lectureData.videoUrl.replace("watch?v=", "embed/");
-                modalDescription.textContent = lectureData.description;
+                    if (lectureData) {
+                        modalTitle.textContent = lectureData.title;
+                        // Use the iframe embed code for YouTube - IMPORTANT FIX
+                        modalVideo.src = lectureData.videoUrl.replace("watch?v=", "embed/");
+                        modalDescription.textContent = lectureData.description;
 
-                // Update the Mark as Complete button status
-                const lectureId = lecture.dataset.id;
+                        // Update the Mark as Complete button status
+                        if (completedLectures[lectureId]) {
+                            markCompleteButton.textContent = 'Mark as Incomplete';
+                            markCompleteButton.classList.add('completed'); // You might want a different style for this
+                        } else {
+                            markCompleteButton.textContent = 'Mark as Complete';
+                            markCompleteButton.classList.remove('completed');
+                        }
+
+                        modal.style.display = 'block'; // Show the modal
+                    } else {
+                        console.error("Data not found for lecture ID:", lectureId);
+                        // Optionally show an error to the user in the modal
+                        modalTitle.textContent = "Error";
+                        modalVideo.src = ""; // Clear video source
+                        modalDescription.textContent = "Could not load lecture details.";
+                        markCompleteButton.style.display = 'none'; // Hide button if data fails
+                        modal.style.display = 'block';
+                    }
+                });
+            });
+
+            // Close the modal when the close button is clicked
+            closeButton.addEventListener('click', () => {
+                closeModal();
+            });
+
+            // Close the modal when clicking outside of it
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Handle the "Mark as Complete/Incomplete" button click
+            markCompleteButton.addEventListener('click', () => {
+                if (!currentLectureElement) return; // Should not happen, but good practice
+
+                const lectureId = currentLectureElement.dataset.id;
+                const statusElement = currentLectureElement.querySelector('.lecture-status');
+
                 if (completedLectures[lectureId]) {
-                    markCompleteButton.textContent = 'Mark as Incomplete';
-                    markCompleteButton.classList.add('completed'); // You might want a different style for this
-                } else {
+                    // Mark as incomplete
+                    delete completedLectures[lectureId];
+                    statusElement.textContent = 'Not Started';
+                    statusElement.classList.remove('completed');
+                    currentLectureElement.classList.remove('completed');
                     markCompleteButton.textContent = 'Mark as Complete';
                     markCompleteButton.classList.remove('completed');
+                } else {
+                    // Mark as complete
+                    completedLectures[lectureId] = true;
+                    statusElement.textContent = 'Completed';
+                    statusElement.classList.add('completed');
+                    currentLectureElement.classList.add('completed');
+                    markCompleteButton.textContent = 'Mark as Incomplete';
+                    markCompleteButton.classList.add('completed');
                 }
 
-                modal.style.display = 'block'; // Show the modal
-            } else {
-                console.error("Data not found for lecture ID:", lecture.dataset.id);
+                // Save the updated completion status to local storage
+                localStorage.setItem('completedLectures', JSON.stringify(completedLectures));
+                updateProgress(); // Update progress bar after change
+            });
+
+            // Function to close the modal and stop the video
+            function closeModal() {
+                modal.style.display = 'none';
+                modalVideo.src = ''; // Stop the video by resetting the src
+                currentLectureElement = null; // Clear the current lecture reference
             }
+
+            // --- Initialization ---
+            updateStatusDisplay(); // Initial setup of completion status on page load
         });
-    });
+    </script>
 
-    // Close the modal when the close button is clicked
-    closeButton.addEventListener('click', () => {
-        closeModal();
-    });
-
-    // Close the modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Handle the "Mark as Complete/Incomplete" button click
-    markCompleteButton.addEventListener('click', () => {
-        if (!currentLectureElement) return; // Should not happen, but good practice
-
-        const lectureId = currentLectureElement.dataset.id;
-        const statusElement = currentLectureElement.querySelector('.lecture-status');
-
-        if (completedLectures[lectureId]) {
-            // Mark as incomplete
-            delete completedLectures[lectureId];
-            statusElement.textContent = 'Not Started';
-            statusElement.classList.remove('completed');
-            currentLectureElement.classList.remove('completed');
-            markCompleteButton.textContent = 'Mark as Complete';
-            markCompleteButton.classList.remove('completed');
-        } else {
-            // Mark as complete
-            completedLectures[lectureId] = true;
-            statusElement.textContent = 'Completed';
-            statusElement.classList.add('completed');
-            currentLectureElement.classList.add('completed');
-            markCompleteButton.textContent = 'Mark as Incomplete';
-            markCompleteButton.classList.add('completed');
-        }
-
-        // Save the updated completion status to local storage
-        localStorage.setItem('completedLectures', JSON.stringify(completedLectures));
-        updateProgress(); // Update progress bar after change
-    });
-
-    // Function to close the modal and stop the video
-    function closeModal() {
-        modal.style.display = 'none';
-        modalVideo.src = ''; // Stop the video by resetting the src
-        currentLectureElement = null; // Clear the current lecture reference
-    }
-
-    // --- Data Structure (Keep this in your script tag for now) ---
-    // In a real application, you'd likely load this from a server or a separate JSON file
-    const lectureDataMap = {
-        "intro-welcome": {
-            title: "Welcome to the Course!",
-            description: "An introduction to the course structure, goals, and what you'll learn.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "setup-environment": {
-            title: "Setting Up Your Development Environment",
-            description: "Learn how to install the necessary software and tools for this course.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "html-basics": {
-            title: "HTML Fundamentals",
-            description: "Understanding the core building blocks of web pages: tags, elements, and attributes.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "css-styling": {
-            title: "Styling with CSS",
-            description: "Learn how to add styles, colors, layouts, and make your web pages visually appealing.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "js-intro": {
-            title: "Introduction to JavaScript",
-            description: "Getting started with the language of the web: variables, data types, and basic logic.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "dom-manipulation": {
-            title: "Manipulating the DOM",
-            description: "Learn how JavaScript interacts with HTML elements to create dynamic web pages.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-         "git-basics": {
-            title: "Version Control with Git",
-            description: "Understanding the fundamentals of Git for tracking changes and collaborating.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "deploying-app": {
-            title: "Deploying Your Application",
-            description: "Learn how to put your web application online for the world to see.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        },
-        "next-steps": {
-            title: "Next Steps and Further Learning",
-            description: "Where to go from here? Resources and suggestions for continuing your web development journey.",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Placeholder video
-        }
-        // Add more lecture data objects here as needed
-    };
-
-    // --- Initialization ---
-    updateStatusDisplay(); // Initial setup of completion status on page load
-});
+</body>
+</html>
