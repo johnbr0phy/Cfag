@@ -3,147 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sketching Year 2025-26 - Interactive 3D Guide</title>
+    <title>Sketching Year 2025-26 - Interactive Course Book</title>
     <style>
+        :root {
+            --primary-color: #0056b3; /* Darker blue */
+            --secondary-color: #e9ecef; /* Light grey */
+            --accent-color: #ffc107; /* Amber/yellow */
+            --text-color: #212529; /* Near black */
+            --light-text: #495057; /* Grey */
+            --border-color: #dee2e6; /* Lighter grey */
+            --completed-color: #d1e7dd; /* Lighter success green */
+            --completed-text: #0f5132; /* Darker success green */
+            --hover-bg: #f8f9fa; /* Very light grey */
+            --sidebar-width: 280px;
+        }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            overflow: hidden; /* Prevent scrollbars from body */
-        }
-
-        #info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 1.1em;
-            z-index: 10;
-        }
-
-        #container {
-            width: 100vw;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            display: flex;
             height: 100vh;
-            display: block;
+            overflow: hidden; /* Prevent body scrolling */
         }
 
-        #detailPanel {
-            position: fixed;
-            top: 0;
-            right: -100%; /* Start off-screen */
-            width: 35%;
-            max-width: 500px;
-            min-width: 320px;
+        .course-container {
+            display: flex;
+            width: 100%;
             height: 100%;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
             background-color: #ffffff;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-            transition: right 0.5s ease-in-out;
-            z-index: 100;
-            overflow-y: auto;
-            padding: 25px;
-            box-sizing: border-box; /* Include padding in width/height */
-            border-left: 1px solid #ccc;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Full height */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
         }
 
-        #detailPanel.visible {
-            right: 0; /* Slide in */
+        .sidebar-header {
+            padding: 18px 15px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
         }
 
-        #detailPanel h2 {
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        #progress-indicator {
+            padding: 12px 15px;
+            font-size: 0.9em;
+            background-color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+         #progress-text {
+             margin-bottom: 8px;
+             display: block; /* Ensure it takes full width */
+             color: var(--light-text);
+         }
+
+        #progress-bar-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 12px;
+            margin-top: 5px;
+        }
+
+        #progress-bar {
+            width: 0%; /* Initial width */
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.4s ease-in-out;
+            border-radius: 5px;
+        }
+
+
+        #week-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto; /* Enable scrolling for the list */
+            flex-grow: 1; /* Allow list to take remaining space */
+        }
+
+        #week-list li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s, border-left-color 0.2s;
+            font-size: 0.95em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--light-text);
+            position: relative; /* For pseudo-elements */
+            border-left: 4px solid transparent; /* Placeholder for active state */
+        }
+
+        #week-list li:hover {
+            background-color: var(--hover-bg);
+        }
+
+        #week-list li.active {
+            background-color: var(--secondary-color);
+            font-weight: 600; /* Slightly bolder */
+            border-left-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        #week-list li.completed {
+           /* Background is slightly lighter green */
+           color: var(--completed-text); /* Text is darker green */
+        }
+        #week-list li.completed .week-title {
+            /* Optional: Make title slightly bolder when completed */
+             /* font-weight: 500; */
+        }
+
+        #week-list li .week-status {
+            font-size: 1.1em; /* Checkmark size */
+            margin-left: 10px;
+            color: transparent; /* Hide by default */
+            font-weight: bold;
+        }
+        #week-list li.completed .week-status {
+             color: var(--completed-text); /* Show checkmark */
+        }
+
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; /* Stack navigation and content */
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Prevent main content overflow issues */
+        }
+
+        .main-header {
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0; /* Prevent header from shrinking */
+        }
+
+        .navigation button {
+            padding: 8px 18px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            font-size: 0.9em;
+            margin: 0 5px; /* Spacing between buttons */
+        }
+
+        .navigation button:hover:not(:disabled) {
+            background-color: #004085; /* Darken blue on hover */
+        }
+         .navigation button:disabled {
+            background-color: #adb5bd; /* Grey out disabled */
+             cursor: not-allowed;
+             opacity: 0.7;
+         }
+
+        #current-week-display {
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--text-color);
+            text-align: center;
+            flex-grow: 1; /* Take available space */
+            margin: 0 15px; /* Space around title */
+        }
+
+        .content-scroll-area {
+             flex-grow: 1; /* Take remaining vertical space */
+             overflow-y: auto; /* Enable scrolling ONLY for this area */
+             padding: 25px 30px; /* Padding inside the scroll area */
+             background-color: #fdfdfd; /* Slightly off-white background for content */
+        }
+
+
+        #week-detail h2 {
             margin-top: 0;
-            color: #0056b3;
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        #week-detail .week-meta {
+            font-size: 0.95em;
+            color: var(--light-text);
+            margin-bottom: 25px;
+        }
+         #week-detail h3 { /* Style for Encouragement/TryThis titles */
             font-size: 1.4em;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            color: var(--text-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
+            font-weight: 500;
+         }
+
+        #week-detail p, #week-detail li {
+            line-height: 1.7;
+            color: var(--light-text);
+            margin-bottom: 1em; /* Space between paragraphs */
         }
-         #detailPanel h3 { /* Style for the Encouragement title */
-            font-size: 1.2em;
-            color: #333;
-            margin-top: 20px;
-            margin-bottom: 10px;
+        #week-detail strong {
+            color: var(--text-color);
+            font-weight: 600;
         }
 
-        #detailPanel p, #detailPanel li {
-            line-height: 1.6;
-            color: #555;
+        /* Specific styling for sections */
+        .encouragement-text, .trythis-text {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px; /* Space below the heading */
         }
+        .encouragement-text p:last-child, .trythis-text p:last-child {
+             margin-bottom: 0; /* Remove extra margin at the end */
+         }
 
-        #detailPanel strong {
-            color: #333;
-        }
 
-        #detailPanel img {
+        #week-detail img {
             max-width: 100%;
             height: auto;
-            margin-top: 15px;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             display: block; /* Prevents extra space below */
-            background-color: #eee; /* Placeholder bg */
+            background-color: var(--secondary-color); /* Placeholder bg */
+            border: 1px solid var(--border-color);
         }
 
-        #closeButton {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #eee;
-            border: none;
-            font-size: 24px;
-            font-weight: bold;
-            color: #888;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            line-height: 28px;
+        .completion-toggle {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
             text-align: center;
+        }
+
+        #complete-button {
+            padding: 10px 25px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid;
             transition: background-color 0.2s, color 0.2s;
         }
 
-        #closeButton:hover {
-            background-color: #ddd;
-            color: #333;
+        #complete-button.mark-complete {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        #complete-button.mark-complete:hover {
+            background-color: #004085;
         }
 
-        /* Simple loading indicator */
-        .loading-indicator {
+        #complete-button.mark-incomplete {
+            background-color: var(--completed-color);
+            border-color: var(--completed-text);
+            color: var(--completed-text);
+            font-weight: 500;
+        }
+         #complete-button.mark-incomplete:hover {
+             background-color: #bcdfca; /* Slightly darker green on hover */
+         }
+
+
+        /* Image Error/Loading */
+        .image-placeholder {
+            min-height: 150px;
+            background-color: var(--secondary-color);
+            border: 1px dashed var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-text);
+            font-style: italic;
+            border-radius: 5px;
+            margin-top: 20px;
             text-align: center;
             padding: 20px;
-            font-style: italic;
-            color: #999;
         }
+
+        /* Responsive adjustments (optional but good practice) */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow: auto; /* Allow body scroll on small screens */
+            }
+            .sidebar {
+                width: 100%;
+                height: auto; /* Adjust height */
+                max-height: 40vh; /* Limit sidebar height */
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                overflow: hidden; /* Hide internal scrollbars initially */
+                display: block; /* Override flex */
+            }
+             .sidebar-header, #progress-indicator {
+                 /* Adjust padding maybe */
+             }
+            #week-list {
+                 max-height: calc(40vh - 50px - 60px); /* Adjust based on header/progress height */
+                 overflow-y: auto;
+            }
+            .main-content {
+                 height: auto; /* Let content determine height */
+                 overflow: visible; /* Remove internal scroll */
+            }
+            .main-header {
+                padding: 10px 15px;
+            }
+            .content-scroll-area {
+                padding: 15px;
+                overflow-y: visible; /* Remove internal scroll */
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div id="info">Sketching Year 2025-26</div>
-    <div id="container"></div>
-    <div id="detailPanel">
-        <button id="closeButton">×</button>
-        <div id="detailContent">
-            <!-- Details will be loaded here -->
-        </div>
+    <div class="course-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Sketching Year 25-26</h2>
+            </div>
+            <div id="progress-indicator">
+                <span id="progress-text">Your Progress: 0 / 52</span>
+                <div id="progress-bar-container">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+            <ul id="week-list">
+                <!-- Week list items will be generated here -->
+                <li class="loading">Loading weeks...</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-header">
+                 <div class="navigation">
+                    <button id="prev-button" disabled>< Previous</button>
+                 </div>
+                <div id="current-week-display">Week X: Title</div>
+                 <div class="navigation">
+                    <button id="next-button">Next ></button>
+                </div>
+            </div>
+            <div class="content-scroll-area">
+                 <div id="week-detail">
+                     <!-- Current week details will be loaded here -->
+                     <p>Select a week from the list to get started.</p>
+                 </div>
+                  <div class="completion-toggle">
+                      <button id="complete-button" disabled>Mark as Complete</button>
+                  </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Import Three.js and OrbitControls -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
-            }
-        }
-    </script>
-
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-        // --- Data ---
-        // Embed the CSV data as a JavaScript array of objects
+    <script>
+        // --- Data --- (Embed your data here)
         const sketchingData = [
             { Month: "M01 - Apr", Date: "Fri 28 Mar 25", WeekNum: "01", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Early Signs of Spring", EncouragementMessage: "### Spring Awakening ###\nSpring is here! A new season of sketching begins, full of fresh colours, blooming flowers, and the return of life to the landscape.\n\nNature is waking up—so should your sketchbook! Look for the small but powerful signs of spring: the first blossoms, greener landscapes, or even the changing mood of the sky. Notice how the light softens as the days grow longer, casting warmer tones and creating fresh contrasts in the environment.\n\nThis week’s challenge: Go for a walk—whether in a park, a garden, or even a city street—and observe the early signs of spring. Sketch what catches your eye, whether it’s a delicate flower pushing through the ground, raindrops clinging to new leaves, or birds returning to nest.\n\nPost your sketches in the Facebook group—let’s celebrate the season together!\n\nHappy sketching!", TryThis: "Try This: Use watercolours or coloured pencils to layer soft, fresh tones. \nCapture delicate textures with light, feathery strokes. Experiment with sketching outdoors, even if only for a few minutes, to observe real-time seasonal changes.", ImageURL: "https://photos.app.goo.gl/MUhcG7fwLY1m3z546" },
             { Month: "M01 - Apr", Date: "Fri 04 Apr 25", WeekNum: "02", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Blossoms & New Growth", EncouragementMessage: "Blossoms and buds are appearing everywhere—sketch them up close or as part of a wider scene. Notice how petals catch the light, creating soft, glowing edges. Observe the subtle shifts in colour, from pale buds to vibrant flowers in full bloom.\n\nThis week’s challenge: Choose a tree or plant with blossoms and sketch its transformation. Try different perspectives—zoom in on a single flower, or capture the overall shape of branches laden with new growth.\n\nDon’t worry about every detail—focus on capturing the essence of spring’s renewal.\n\nShare your sketches in the Facebook group—let’s bring the beauty of blossoms to life!", TryThis: "Try This: Experiment with ink and a fine brush to create delicate, flowing lines. \nUse negative space to let blossoms 'breathe' in your composition. Try using different shades of green and pink to reflect the soft pastels of spring.", ImageURL: "https://photos.app.goo.gl/fWsPEPeEWk5dXPkW8" },
@@ -199,303 +447,224 @@
             { Month: "M12 - Mar", Date: "Fri 20 Mar 26", WeekNum: "52", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Favourite Room or Object", EncouragementMessage: "A home is filled with objects that hold personal meaning—a well-worn armchair, a treasured ornament, or a workspace where creativity happens. Sketching these familiar things can help develop storytelling in your art.\n\nThis week’s challenge: Choose your favourite room or object in your home and sketch it. Consider why it’s meaningful—what details make it special? Try to capture the essence of the space, whether it’s a cosy bedroom, a lively kitchen, or a well-used desk.\n\nWhat does this space say about you?\n\nPost your home sketches in the Facebook group!", TryThis: "Try This: Use soft shading or subtle colour to create mood. \nExperiment with perspective—try a close-up of details or a wide-angle sketch of the whole room.", ImageURL: null }
         ];
 
-        // --- Three.js Setup ---
-        let scene, camera, renderer, controls;
-        let raycaster, mouse;
-        const clickableObjects = [];
-        let INTERSECTED;
+        // --- Application State & Logic ---
+        let currentWeekIndex = 0;
+        let completionStatus = {}; // Object to store completion state: { '01': true, '02': false, ... }
+        const totalWeeks = sketchingData.length;
+        const STORAGE_KEY = 'sketchingCourseProgress_25_26'; // Unique key for localStorage
 
-        const container = document.getElementById('container');
-        const detailPanel = document.getElementById('detailPanel');
-        const detailContent = document.getElementById('detailContent');
-        const closeButton = document.getElementById('closeButton');
+        // DOM Elements
+        const weekList = document.getElementById('week-list');
+        const weekDetail = document.getElementById('week-detail');
+        const currentWeekDisplay = document.getElementById('current-week-display');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const completeButton = document.getElementById('complete-button');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const contentScrollArea = document.querySelector('.content-scroll-area');
 
-        function init() {
-            // Scene
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xdedede);
-            scene.fog = new THREE.Fog(0xdedede, 20, 60); // Add fog for depth effect
+        // --- Functions ---
 
-            // Camera
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 5, 18); // Position camera further back
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
-            directionalLight.position.set(5, 10, 7.5);
-            scene.add(directionalLight);
-
-            // Controls
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; // Smooth camera movement
-            controls.dampingFactor = 0.05;
-            controls.screenSpacePanning = false;
-            controls.minDistance = 5; // Zoom limits
-            controls.maxDistance = 40;
-            controls.maxPolarAngle = Math.PI / 1.8; // Prevent looking directly down/up too far
-
-            // Raycaster for interaction
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
-
-            // Create week objects
-            createWeekCards();
-
-            // Event Listeners
-            window.addEventListener('resize', onWindowResize, false);
-            container.addEventListener('mousemove', onMouseMove, false);
-            container.addEventListener('click', onClick, false);
-            closeButton.addEventListener('click', hideDetailPanel, false);
-
-            animate();
-        }
-
-        function createWeekCards() {
-            const radius = 10; // Radius of the circle arrangement
-            const angleStep = (Math.PI * 2) / sketchingData.length;
-            const cardWidth = 2.5;
-            const cardHeight = 3.5;
-
-            const geometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
-
-            sketchingData.forEach((week, index) => {
-                const texture = createWeekTexture(week.WeekNum, week.WeeklyPrompt);
-                const material = new THREE.MeshStandardMaterial({
-                    map: texture,
-                    side: THREE.DoubleSide, // Show texture on both sides
-                    roughness: 0.8,
-                    metalness: 0.1
-                 });
-
-                const plane = new THREE.Mesh(geometry, material);
-
-                // Position in a circle
-                const angle = angleStep * index;
-                plane.position.x = radius * Math.sin(angle);
-                plane.position.z = radius * Math.cos(angle);
-                plane.position.y = 1; // Elevate slightly
-
-                // Rotate plane to face outwards/towards center
-                plane.lookAt(0, plane.position.y, 0); // Make them face the center initially
-
-                // Store week data for retrieval on click
-                plane.userData = { index: index, weekData: week };
-
-                scene.add(plane);
-                clickableObjects.push(plane);
-            });
-        }
-
-         // Function to create texture for each week card using CanvasTexture
-        function createWeekTexture(weekNum, prompt) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const canvasWidth = 256;
-            const canvasHeight = 356; // Slightly taller than wider
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-
-            // Background color
-            ctx.fillStyle = getRandomSoftColor();
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            // Border
-            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-            ctx.lineWidth = 8;
-            ctx.strokeRect(0, 0, canvasWidth, canvasHeight);
-
-            // Week Number Styling
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 70px Arial';
-            ctx.textAlign = 'center';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 5;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            ctx.fillText(weekNum, canvasWidth / 2, canvasHeight * 0.35);
-
-            // Reset shadow for text
-            ctx.shadowColor = 'transparent';
-
-            // Prompt Text Styling (wrap text)
-            ctx.fillStyle = 'rgba(0,0,0,0.8)';
-            ctx.font = '22px Segoe UI, sans-serif';
-            ctx.textAlign = 'center';
-            wrapText(ctx, prompt, canvasWidth / 2, canvasHeight * 0.6, canvasWidth - 40, 28);
-
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            return texture;
-        }
-
-        // Utility to wrap text on canvas
-        function wrapText(context, text, x, y, maxWidth, lineHeight) {
-            const words = text.split(' ');
-            let line = '';
-            let currentY = y;
-
-            for (let n = 0; n < words.length; n++) {
-                const testLine = line + words[n] + ' ';
-                const metrics = context.measureText(testLine);
-                const testWidth = metrics.width;
-                if (testWidth > maxWidth && n > 0) {
-                    context.fillText(line, x, currentY);
-                    line = words[n] + ' ';
-                    currentY += lineHeight;
-                } else {
-                    line = testLine;
-                }
+        function loadProgress() {
+            const savedProgress = localStorage.getItem(STORAGE_KEY);
+            if (savedProgress) {
+                completionStatus = JSON.parse(savedProgress);
+            } else {
+                // Initialize if no saved data
+                sketchingData.forEach(week => {
+                    completionStatus[week.WeekNum] = false;
+                });
             }
-            context.fillText(line, x, currentY);
+            // Ensure all weeks exist in the status object (in case data changes)
+             sketchingData.forEach(week => {
+                if (completionStatus[week.WeekNum] === undefined) {
+                     completionStatus[week.WeekNum] = false;
+                 }
+             });
+
         }
 
-        // Utility for random soft background colors
-        function getRandomSoftColor() {
-            const h = Math.floor(Math.random() * 360); // Hue (0-360)
-            const s = Math.floor(Math.random() * 20) + 50; // Saturation (50-70%)
-            const l = Math.floor(Math.random() * 20) + 60; // Lightness (60-80%)
-            return `hsl(${h}, ${s}%, ${l}%)`;
+        function saveProgress() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completionStatus));
         }
 
-
-        function formatEncouragement(text) {
+        function formatTextContent(text) {
+            if (!text) return '';
             // Convert ### Title ### to <h3>Title</h3>
-             text = text.replace(/### (.*?) ###/g, '<h3>$1</h3>');
-             // Convert \n\n to <br><br> (paragraphs)
-             text = text.replace(/\n\n/g, '<br><br>');
-             // Convert single \n to <br> (line breaks, e.g., in TryThis)
-             text = text.replace(/(?<!<br>)\n/g, '<br>');
+            text = text.replace(/### (.*?) ###/g, '<h3>$1</h3>');
+            // Keep "Try This:" bold but within the paragraph/div context
+            text = text.replace(/^(Try This:)/gim, '<strong>$1</strong>');
+             // Convert \n\n to paragraph breaks
+             let paragraphs = text.split(/\n\n+/);
+             text = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join(''); // Wrap in <p>, convert single \n within paragraphs to <br>
+
             return text;
         }
 
-        function showDetailPanel(weekData) {
-            let imageUrl = weekData.ImageURL;
-            // Handle Google Drive links - requires transformation for direct display
-             if (imageUrl && imageUrl.includes('drive.google.com')) {
-                 // Extract file ID and attempt to create a direct thumbnail link
-                 // NOTE: This might not always work depending on sharing settings & Google changes.
-                 const fileIdMatch = imageUrl.match(/file\/d\/([^/]+)/);
-                 if (fileIdMatch && fileIdMatch[1]) {
-                     imageUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`; // Request larger thumbnail
-                 } else {
-                     imageUrl = null; // Indicate failure to parse
-                 }
-            }
-            // Basic handling for Google Photos links (might still fail due to permissions)
-            // No reliable transformation known for direct embedding usually.
+        function renderWeekList() {
+            weekList.innerHTML = ''; // Clear existing list
+            sketchingData.forEach((week, index) => {
+                const li = document.createElement('li');
+                li.dataset.index = index; // Store index for easy lookup
 
-            detailContent.innerHTML = `
-                <h2>Week ${weekData.WeekNum}: ${weekData.WeeklyPrompt}</h2>
-                <p><strong>Date:</strong> ${weekData.Date}</p>
-                <p><strong>Theme:</strong> ${weekData.MonthlyTheme}</p>
-                <div class="encouragement">
-                    ${formatEncouragement(weekData.EncouragementMessage)}
-                </div>
-                <p><strong>${formatEncouragement(weekData.TryThis)}</strong></p>
-                ${imageUrl ? `<img src="${imageUrl}" alt="Image for week ${weekData.WeekNum}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"> <p class="loading-indicator" style="display: none;">Image not available or failed to load.</p>` : '<p class="loading-indicator">No image provided.</p>'}
-            `;
-            detailPanel.classList.add('visible');
-             // Scroll panel to top
-             detailPanel.scrollTop = 0;
-        }
+                const titleSpan = document.createElement('span');
+                titleSpan.classList.add('week-title');
+                titleSpan.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
 
-        function hideDetailPanel() {
-            detailPanel.classList.remove('visible');
-             // Deselect any highlighted object
-             if (INTERSECTED) {
-                INTERSECTED.material.emissive.setHex(0x000000); // Remove emissive highlight
-                INTERSECTED = null;
-            }
-        }
+                const statusSpan = document.createElement('span');
+                statusSpan.classList.add('week-status');
+                statusSpan.textContent = '✔'; // Checkmark symbol
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+                li.appendChild(titleSpan);
+                li.appendChild(statusSpan);
 
-        function onMouseMove(event) {
-            // Calculate mouse position in normalized device coordinates (-1 to +1)
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        }
 
-        function onClick(event) {
-             // Use the current mouse position calculated by onMouseMove
-             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(clickableObjects);
-
-            if (intersects.length > 0) {
-                 // Only process if the clicked object is different from the currently selected one
-                 if (INTERSECTED != intersects[0].object) {
-                     // Remove highlight from the previously selected object
-                    if (INTERSECTED) {
-                        INTERSECTED.material.emissive.setHex(0x000000);
-                    }
-
-                    // Highlight the new object and show details
-                    INTERSECTED = intersects[0].object;
-                    INTERSECTED.material.emissive.setHex(0x555555); // Add slight emissive highlight
-                     const weekIndex = INTERSECTED.userData.index;
-                    showDetailPanel(sketchingData[weekIndex]);
+                if (index === currentWeekIndex) {
+                    li.classList.add('active');
                 }
-            } else {
-                // Clicked on empty space, potentially hide panel or deselect
-                 // Let's hide the panel if clicked outside
-                 hideDetailPanel();
-            }
-        }
+                if (completionStatus[week.WeekNum]) {
+                    li.classList.add('completed');
+                }
 
-         function checkHover() {
-             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(clickableObjects);
+                li.addEventListener('click', () => {
+                    navigateToWeek(index);
+                });
 
-             // Check if hovering over a new object
-            if (intersects.length > 0) {
-                 // Check if it's different from the *selected* object (INTERSECTED)
-                 // and different from the previously *hovered* object (tempHovered)
-                 // For simplicity, let's just scale the first intersected object if it's not the selected one
-                 const hovered = intersects[0].object;
-                 if (hovered !== INTERSECTED) {
-                     // Simple scale effect on hover
-                     hovered.scale.setScalar(1.05);
-                 }
-                 // Reset scale for all other objects
-                 clickableObjects.forEach(obj => {
-                     if (obj !== hovered && obj !== INTERSECTED) {
-                        obj.scale.setScalar(1.0);
-                     }
-                 });
-            } else {
-                 // Not hovering over anything, reset scale for all non-selected objects
-                clickableObjects.forEach(obj => {
-                     if (obj !== INTERSECTED) {
-                         obj.scale.setScalar(1.0);
-                    }
-                 });
+                weekList.appendChild(li);
+            });
+             updateProgress();
+             // Ensure the active item is visible in the scrollable list
+             const activeItem = weekList.querySelector('.active');
+             if (activeItem) {
+                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
              }
         }
 
+        function renderWeekDetail(index) {
+            const week = sketchingData[index];
+            if (!week) return; // Safety check
 
-        function animate() {
-            requestAnimationFrame(animate);
+            currentWeekIndex = index;
+            const isCompleted = completionStatus[week.WeekNum];
 
-            controls.update(); // Only required if controls.enableDamping = true
-             checkHover(); // Check for hover effects
+             // Handle Google Drive links - requires transformation for direct display
+             let imageUrl = week.ImageURL;
+             let imageHtml = '';
+             if (imageUrl) {
+                 if (imageUrl.includes('drive.google.com')) {
+                    const fileIdMatch = imageUrl.match(/file\/d\/([^/]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) {
+                        // Use a thumbnail link (adjust size w=XXX)
+                        imageUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
+                    } else {
+                         imageUrl = null; // Parsing failed
+                    }
+                 }
+                 // Basic handling for Google Photos links (often restricted)
+                 // No reliable transformation usually available.
 
-            renderer.render(scene, camera);
+                if(imageUrl) {
+                    imageHtml = `<img src="${imageUrl}" alt="Image for ${week.WeeklyPrompt}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                 <div class="image-placeholder" style="display: none;">Image preview failed to load. Check link/permissions.</div>`;
+                } else {
+                     imageHtml = `<div class="image-placeholder">Could not parse image URL.</div>`;
+                }
+
+             } else {
+                 imageHtml = `<div class="image-placeholder">No image provided for this week.</div>`;
+             }
+
+
+            weekDetail.innerHTML = `
+                <h2>${week.WeeklyPrompt}</h2>
+                <div class="week-meta">
+                    <strong>Week ${week.WeekNum}</strong> | ${week.Date} | Theme: ${week.MonthlyTheme}
+                </div>
+
+                ${week.EncouragementMessage ? `
+                    <div class="encouragement-container">
+                        ${formatTextContent(week.EncouragementMessage)}
+                    </div>` : ''}
+
+                ${week.TryThis ? `
+                    <div class="trythis-container">
+                         ${formatTextContent(week.TryThis)}
+                     </div>` : ''}
+
+                ${imageHtml}
+            `;
+
+            // Update display and buttons
+            currentWeekDisplay.textContent = `Week ${week.WeekNum}: ${week.WeeklyPrompt}`;
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === totalWeeks - 1;
+            completeButton.disabled = false; // Enable completion button once a week is loaded
+
+            // Update completion button state
+            if (isCompleted) {
+                completeButton.textContent = 'Mark as Incomplete ✔';
+                completeButton.classList.remove('mark-complete');
+                completeButton.classList.add('mark-incomplete');
+            } else {
+                completeButton.textContent = 'Mark as Complete';
+                completeButton.classList.remove('mark-incomplete');
+                completeButton.classList.add('mark-complete');
+            }
+
+            // Update sidebar active state
+            const currentActive = weekList.querySelector('.active');
+            if (currentActive) currentActive.classList.remove('active');
+            const newActive = weekList.querySelector(`li[data-index="${index}"]`);
+            if (newActive) newActive.classList.add('active');
+
+             // Scroll content area to top on navigation
+             contentScrollArea.scrollTop = 0;
         }
 
-        // --- Start ---
-        init();
+        function navigateToWeek(index) {
+            if (index >= 0 && index < totalWeeks) {
+                renderWeekDetail(index);
+            }
+        }
+
+        function toggleCompletion() {
+            const week = sketchingData[currentWeekIndex];
+            if (!week) return;
+
+            completionStatus[week.WeekNum] = !completionStatus[week.WeekNum];
+            saveProgress();
+            renderWeekDetail(currentWeekIndex); // Re-render detail to update button
+            renderWeekList(); // Re-render list to update checkmark/style and progress
+        }
+
+        function updateProgress() {
+             const completedCount = Object.values(completionStatus).filter(status => status === true).length;
+             const progressPercent = totalWeeks > 0 ? (completedCount / totalWeeks) * 100 : 0;
+
+             progressText.textContent = `Your Progress: ${completedCount} / ${totalWeeks}`;
+             progressBar.style.width = `${progressPercent}%`;
+         }
+
+        // --- Event Listeners ---
+        prevButton.addEventListener('click', () => {
+            navigateToWeek(currentWeekIndex - 1);
+        });
+
+        nextButton.addEventListener('click', () => {
+            navigateToWeek(currentWeekIndex + 1);
+        });
+
+        completeButton.addEventListener('click', toggleCompletion);
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            renderWeekList();
+            // Load the first week by default, or the last viewed (optional)
+            navigateToWeek(currentWeekIndex); // Start at week 0
+             updateProgress(); // Initial progress update
+        });
 
     </script>
 </body>
