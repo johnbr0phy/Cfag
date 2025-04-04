@@ -16,7 +16,7 @@
             --completed-text: #0f5132; /* Darker success green */
             --hover-bg: #f8f9fa; /* Very light grey */
             --sidebar-width: 280px;
-            --welcome-bg: rgba(0, 0, 0, 0.7); /* Overlay background */
+            --gallery-placeholder-bg: #f0f0f0;
         }
 
         html { box-sizing: border-box; }
@@ -33,66 +33,13 @@
             font-size: 16px; /* Base font size */
         }
 
-        /* --- Welcome Screen --- */
-        #welcome-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--welcome-bg);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
-        }
-        #welcome-overlay.hidden {
-            opacity: 0;
-            pointer-events: none; /* Allow interaction with content below */
-        }
-        .welcome-box {
-            background-color: #fff;
-            padding: 30px 40px;
-            border-radius: 8px;
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .welcome-box h1 {
-            color: var(--primary-color);
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        .welcome-box p {
-            line-height: 1.6;
-            color: var(--light-text);
-            margin-bottom: 25px;
-        }
-        #start-button {
-            padding: 12px 30px;
-            font-size: 1.1em;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #start-button:hover {
-            background-color: #004085;
-        }
-
-
         .course-container {
             display: flex;
             width: 100%;
             height: 100%;
         }
 
-        /* --- Sidebar (Mostly unchanged) --- */
+        /* --- Sidebar --- */
         .sidebar {
             width: var(--sidebar-width);
             flex-shrink: 0;
@@ -113,20 +60,33 @@
         #week-list li { padding: 12px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s, border-left-color 0.2s; font-size: 0.9em; display: flex; justify-content: space-between; align-items: center; color: var(--light-text); position: relative; border-left: 4px solid transparent; }
         #week-list li:hover { background-color: var(--hover-bg); }
         #week-list li.active { background-color: var(--secondary-color); font-weight: 600; border-left-color: var(--primary-color); color: var(--text-color); }
+        #week-list li.welcome-item.active { border-left-color: var(--accent-color); } /* Different highlight for welcome */
         #week-list li.completed { color: var(--completed-text); }
         #week-list li .week-status { font-size: 1.1em; margin-left: 10px; color: transparent; font-weight: bold; flex-shrink: 0; }
         #week-list li.completed .week-status { color: var(--completed-text); }
         #week-list li .week-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 5px; }
+        #week-list li.welcome-item .week-status { display: none; } /* Hide checkmark for welcome */
 
-        /* --- Main Content Area (Mostly unchanged) --- */
+        /* --- Main Content Area --- */
         .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         .main-header { padding: 15px 25px; border-bottom: 1px solid var(--border-color); background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; position: relative; z-index: 10; }
         .main-header .navigation { display: flex; gap: 10px; }
-        .navigation button { padding: 8px 18px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; font-size: 0.9em; white-space: nowrap; }
-        .navigation button:hover:not(:disabled) { background-color: #004085; }
-        .navigation button:disabled { background-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
+        .navigation button, .header-actions button { padding: 8px 18px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; font-size: 0.9em; white-space: nowrap; }
+        .navigation button:hover:not(:disabled), .header-actions button:hover:not(:disabled) { background-color: #004085; }
+        .navigation button:disabled, .header-actions button:disabled { background-color: #adb5bd; cursor: not-allowed; opacity: 0.7; }
         #current-week-display { font-size: 1.05em; font-weight: 500; color: var(--text-color); text-align: center; flex-grow: 1; margin: 0 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .header-actions { display: flex; gap: 10px; }
+        .header-actions button { font-size: 0.85em; padding: 6px 12px; background-color: var(--secondary-color); color: var(--text-color); border: 1px solid var(--border-color); }
+        .header-actions button:hover:not(:disabled) { background-color: #d3d9df; }
         .content-scroll-area { flex-grow: 1; overflow-y: auto; padding: 25px 30px; background-color: #fdfdfd; -webkit-overflow-scrolling: touch; }
+
+        /* --- Welcome Screen Content --- */
+        .welcome-content { padding: 20px; }
+        .welcome-content h1 { color: var(--primary-color); margin-top: 0; }
+        .welcome-content p { line-height: 1.7; color: var(--light-text); margin-bottom: 1.5em; }
+        .welcome-content strong { color: var(--text-color); }
+
+        /* --- Detail View Content --- */
         #week-detail h2 { margin-top: 0; color: var(--primary-color); font-size: 1.7em; margin-bottom: 8px; font-weight: 600; line-height: 1.3; }
         #week-detail .week-meta { font-size: 0.9em; color: var(--light-text); margin-bottom: 25px; }
         #week-detail h3 { font-size: 1.3em; color: var(--text-color); margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid var(--secondary-color); padding-bottom: 8px; font-weight: 500; }
@@ -136,70 +96,20 @@
         .encouragement-container p:last-child, .trythis-container p:last-child { margin-bottom: 0; }
         #week-detail img { max-width: 100%; height: auto; margin-top: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: block; background-color: var(--secondary-color); border: 1px solid var(--border-color); }
         .image-placeholder { min-height: 150px; background-color: var(--secondary-color); border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--light-text); font-style: italic; border-radius: 5px; margin-top: 20px; text-align: center; padding: 20px; font-size: 0.9em; }
-        .image-loaded-container img { /* Styles for image after loaded */ border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: none; } /* Remove placeholder styles */
+        .image-loaded-container img { border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); background: none; }
         .image-placeholder.error { border-color: #dc3545; color: #dc3545; }
 
         /* --- Submission Area --- */
-        .submission-area {
-            margin-top: 30px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background-color: #fff;
-        }
-        .submission-area h4 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-            color: var(--text-color);
-        }
-        /* Hide default file input */
-        #submission-upload {
-            width: 0.1px;
-            height: 0.1px;
-            opacity: 0;
-            overflow: hidden;
-            position: absolute;
-            z-index: -1;
-        }
-        /* Style the label like a button */
-        .upload-label {
-            display: inline-block;
-            padding: 8px 20px;
-            font-size: 0.9em;
-            font-weight: 500;
-            color: white;
-            background-color: var(--primary-color);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-right: 15px;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .upload-label:hover {
-            background-color: #004085;
-        }
-        #file-info {
-            display: inline-block; /* Keep on same line */
-            font-size: 0.9em;
-            color: var(--light-text);
-            font-style: italic;
-        }
-        #thumbnail-preview {
-            display: block; /* On its own line */
-            max-width: 150px; /* Limit thumbnail size */
-            max-height: 150px;
-            margin-top: 15px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            object-fit: cover; /* Scale image nicely */
-        }
-        #thumbnail-preview:not([src]) {
-            display: none; /* Hide if no src */
-        }
+        .submission-area { margin-top: 30px; padding: 20px; border: 1px solid var(--border-color); border-radius: 5px; background-color: #fff; }
+        .submission-area h4 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: var(--text-color); }
+        #submission-upload { width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; position: absolute; z-index: -1; }
+        .upload-label { display: inline-block; padding: 8px 20px; font-size: 0.9em; font-weight: 500; color: white; background-color: var(--primary-color); border-radius: 4px; cursor: pointer; transition: background-color 0.2s; margin-right: 15px; -webkit-tap-highlight-color: transparent; }
+        .upload-label:hover { background-color: #004085; }
+        #file-info { display: inline-block; font-size: 0.9em; color: var(--light-text); font-style: italic; }
+        #thumbnail-preview { display: block; max-width: 150px; max-height: 150px; margin-top: 15px; border-radius: 4px; border: 1px solid var(--border-color); object-fit: cover; }
+        #thumbnail-preview:not([src]) { display: none; }
 
-
-        /* --- Completion Toggle (Mostly unchanged) --- */
+        /* --- Completion Toggle --- */
         .completion-toggle { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; }
         #complete-button { padding: 10px 25px; font-size: 1em; border-radius: 5px; cursor: pointer; border: 1px solid; transition: background-color 0.2s, color 0.2s, opacity 0.2s; -webkit-tap-highlight-color: transparent; }
         #complete-button:disabled { background-color: #adb5bd; border-color: #adb5bd; color: #fff; cursor: not-allowed; opacity: 0.65; }
@@ -208,38 +118,91 @@
         #complete-button.mark-incomplete { background-color: var(--completed-color); border-color: var(--completed-text); color: var(--completed-text); font-weight: 500; }
         #complete-button.mark-incomplete:hover { background-color: #bcdfca; }
 
-        /* --- Responsive Design (Adjustments for new elements) --- */
+        /* --- Submissions Gallery View --- */
+        #gallery-view { padding: 20px; }
+        #gallery-view h2 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Responsive grid */
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .gallery-item {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #fff;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .gallery-item img {
+            max-width: 100%;
+            height: 100px; /* Fixed height for consistency */
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 10px auto;
+            border-radius: 3px;
+        }
+        .gallery-item .filename {
+            font-size: 0.8em;
+            color: var(--light-text);
+            word-wrap: break-word; /* Wrap long filenames */
+        }
+        .gallery-item.user-submission {
+            border-color: var(--primary-color); /* Highlight user's submission */
+            border-width: 2px;
+            background-color: #e7f1ff;
+        }
+         .gallery-item.placeholder {
+            background-color: var(--gallery-placeholder-bg);
+            border-style: dashed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+             height: 122px; /* Match image height + padding approx */
+             color: var(--light-text);
+             font-size: 0.9em;
+         }
+         #gallery-view .no-submissions {
+             text-align: center;
+             margin-top: 30px;
+             color: var(--light-text);
+             font-style: italic;
+         }
+
+
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             body { flex-direction: column; height: auto; overflow-y: auto; font-size: 15px; }
             .course-container { flex-direction: column; height: auto; }
-            .sidebar { width: 100%; height: auto; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-            .sidebar-header { padding: 12px 15px; }
-            #progress-indicator { padding: 10px 15px; }
+            .sidebar { width: 100%; height: auto; max-height: 45vh; border-right: none; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
             .main-content { height: auto; overflow: visible; width: 100%; }
-            .main-header { padding: 10px 15px; flex-wrap: wrap; justify-content: center; gap: 8px; }
-            #current-week-display { order: -1; width: 100%; text-align: center; margin: 0 0 5px 0; font-size: 1.1em; }
-            .main-header .navigation { display: flex; justify-content: space-between; width: 100%; }
-            .navigation button { padding: 8px 12px; flex-grow: 1; flex-basis: 0; margin: 0 4px; }
+            .main-header { padding: 10px 15px; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+            #current-week-display { order: 0; width: auto; flex-grow: 0; text-align: left; margin: 0; font-size: 1.1em; } /* Allow title next to actions */
+            .main-header .navigation { order: 1; width: 100%; display: flex; justify-content: space-between; margin-top: 8px; } /* Nav buttons below title/actions */
+            .header-actions { order: 0; } /* Actions next to title */
+            .navigation button, .header-actions button { padding: 8px 12px; flex-grow: 1; flex-basis: 0; margin: 0 4px; font-size: 0.9em; }
+            .header-actions button { flex-grow: 0; flex-basis: auto; } /* Don't stretch action buttons */
             .content-scroll-area { padding: 15px 15px 25px 15px; overflow-y: visible; }
             #week-detail h2 { font-size: 1.5em; }
             #week-detail h3 { font-size: 1.2em; }
             .submission-area { padding: 15px; }
-            .upload-label { display: block; margin-bottom: 10px; text-align: center; } /* Stack button on mobile */
-            #file-info { display: block; text-align: center; } /* Stack file info */
-            #thumbnail-preview { margin-left: auto; margin-right: auto; } /* Center thumbnail */
+            .upload-label { display: block; margin-bottom: 10px; text-align: center; }
+            #file-info { display: block; text-align: center; }
+            #thumbnail-preview { margin-left: auto; margin-right: auto; }
             #complete-button { font-size: 0.95em; padding: 10px 20px; }
-            .welcome-box { width: 95%; padding: 20px; }
-            .welcome-box h1 { font-size: 1.5em; }
-            .welcome-box p { font-size: 0.95em; }
-            #start-button { padding: 10px 25px; font-size: 1em; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+            .gallery-item { padding: 8px; }
+            .gallery-item img { height: 80px; }
+            .gallery-item.placeholder { height: 100px; font-size: 0.8em;}
         }
         @media (max-width: 480px) {
             body { font-size: 14px; }
             .sidebar-header h2 { font-size: 1.1em; }
-            #week-list li { font-size: 0.85em; padding: 8px 12px; }
+            #week-list li { font-size: 0.85em; padding: 10px 12px; }
             .main-header { padding: 8px 10px; gap: 5px; }
             #current-week-display { font-size: 1em; }
-            .navigation button { padding: 6px 10px; font-size: 0.85em;}
+            .navigation button, .header-actions button { padding: 6px 10px; font-size: 0.85em;}
             .content-scroll-area { padding: 10px 10px 20px 10px; }
             #week-detail h2 { font-size: 1.4em; }
             #week-detail h3 { font-size: 1.15em; }
@@ -247,23 +210,14 @@
             .upload-label { font-size: 0.85em; padding: 8px 15px; }
             #file-info { font-size: 0.85em; }
             #complete-button { font-size: 0.9em; padding: 8px 15px; }
-            .welcome-box { padding: 15px; }
-            .welcome-box h1 { font-size: 1.3em; }
-            #start-button { padding: 8px 20px; font-size: 0.95em; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px;}
+            .gallery-item img { height: 70px; }
+            .gallery-item.placeholder { height: 88px; }
         }
 
     </style>
 </head>
 <body>
-    <!-- Welcome Screen -->
-    <div id="welcome-overlay">
-        <div class="welcome-box">
-            <h1>Welcome to the Sketching Year!</h1>
-            <p>This interactive guide follows the 2025-26 Master Sketching Plan. Each week presents a new theme and prompt to inspire your creativity. Use the sidebar to navigate weeks, read the guidance, and try the suggestions. Upload a photo of your sketch for each week to track your progress. You can only mark a week as complete after uploading your submission. Your progress and uploads (filenames/previews) are saved locally in your browser. Happy sketching!</p>
-            <button id="start-button">Get Started</button>
-        </div>
-    </div>
-
     <div class="course-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -277,7 +231,7 @@
                 </div>
             </div>
             <ul id="week-list">
-                <li class="loading">Loading weeks...</li>
+                <!-- Populated by JS -->
             </ul>
         </aside>
 
@@ -286,30 +240,17 @@
             <div class="main-header">
                  <div class="navigation">
                     <button id="prev-button" disabled>< Previous</button>
-                 </div>
-                <div id="current-week-display">Week X: Title</div>
-                 <div class="navigation">
                     <button id="next-button">Next ></button>
-                </div>
+                 </div>
+                <div id="current-week-display">Welcome</div> <!-- Dynamic Title -->
+                 <div class="header-actions">
+                    <button id="view-gallery-button" style="display: none;">View Gallery</button>
+                    <button id="back-to-detail-button" style="display: none;">Back to Detail</button>
+                 </div>
             </div>
-            <div class="content-scroll-area">
-                 <div id="week-detail">
-                     <!-- Initial message, replaced when week loads -->
-                     <p class="initial-message" style="text-align: center; margin-top: 30px; color: var(--light-text);">Select a week from the list to get started.</p>
-                 </div>
-                 <!-- Submission Area -->
-                 <div class="submission-area" id="submission-section" style="display: none;"> <!-- Initially hidden -->
-                     <h4>Your Submission</h4>
-                     <label for="submission-upload" class="upload-label">Choose Image</label>
-                     <input type="file" id="submission-upload" name="submission_upload" accept="image/*">
-                     <span id="file-info">No file selected.</span>
-                     <img id="thumbnail-preview" src="" alt="Submission preview">
-                 </div>
-
-                 <!-- Completion Toggle -->
-                 <div class="completion-toggle">
-                      <button id="complete-button" disabled>Upload Submission to Complete</button>
-                 </div>
+            <div class="content-scroll-area" id="content-area">
+                 <!-- Content (Welcome, Detail, or Gallery) is rendered here by JS -->
+                 <div class="initial-loading" style="text-align: center; margin-top: 30px; color: var(--light-text);">Loading...</div>
             </div>
         </main>
     </div>
@@ -317,425 +258,355 @@
     <script>
         // --- Data --- (Embed your data here - Same as previous version)
         const sketchingData = [
-            { Month: "M01 - Apr", Date: "Fri 28 Mar 25", WeekNum: "01", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Early Signs of Spring", EncouragementMessage: "### Spring Awakening ###\nSpring is here! A new season of sketching begins, full of fresh colours, blooming flowers, and the return of life to the landscape.\n\nNature is waking up—so should your sketchbook! Look for the small but powerful signs of spring: the first blossoms, greener landscapes, or even the changing mood of the sky. Notice how the light softens as the days grow longer, casting warmer tones and creating fresh contrasts in the environment.\n\nThis week’s challenge: Go for a walk—whether in a park, a garden, or even a city street—and observe the early signs of spring. Sketch what catches your eye, whether it’s a delicate flower pushing through the ground, raindrops clinging to new leaves, or birds returning to nest.\n\nPost your sketches in the Facebook group—let’s celebrate the season together!\n\nHappy sketching!", TryThis: "Try This: Use watercolours or coloured pencils to layer soft, fresh tones. \nCapture delicate textures with light, feathery strokes. Experiment with sketching outdoors, even if only for a few minutes, to observe real-time seasonal changes.", ImageURL: "https://photos.app.goo.gl/MUhcG7fwLY1m3z546" },
-            { Month: "M01 - Apr", Date: "Fri 04 Apr 25", WeekNum: "02", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Blossoms & New Growth", EncouragementMessage: "Blossoms and buds are appearing everywhere—sketch them up close or as part of a wider scene. Notice how petals catch the light, creating soft, glowing edges. Observe the subtle shifts in colour, from pale buds to vibrant flowers in full bloom.\n\nThis week’s challenge: Choose a tree or plant with blossoms and sketch its transformation. Try different perspectives—zoom in on a single flower, or capture the overall shape of branches laden with new growth.\n\nDon’t worry about every detail—focus on capturing the essence of spring’s renewal.\n\nShare your sketches in the Facebook group—let’s bring the beauty of blossoms to life!", TryThis: "Try This: Experiment with ink and a fine brush to create delicate, flowing lines. \nUse negative space to let blossoms 'breathe' in your composition. Try using different shades of green and pink to reflect the soft pastels of spring.", ImageURL: "https://photos.app.goo.gl/fWsPEPeEWk5dXPkW8" },
-            { Month: "M01 - Apr", Date: "Fri 11 Apr 25", WeekNum: "03", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Rainy Days & Changing Light", EncouragementMessage: "Spring rain brings a new atmosphere—soft reflections in puddles, misty landscapes, and dramatic cloudscapes. Rain transforms everything, from glistening streets to droplets on petals, adding a unique mood to the season.\n\nThis week’s challenge: Sketch a rainy day scene—whether from the comfort of your home, a café, or while out for a walk. Observe how surfaces appear wet, how reflections change, and how rain softens edges.\n\nIf you’re indoors, capture the way light shifts through raindrops on windows. If outside, focus on reflections, umbrellas, and the movement of falling rain.\n\nPost your sketches and let’s bring the beauty of spring rain to life!", TryThis: "Try This: Use wet-in-wet watercolour techniques or soft pencils to create hazy, atmospheric effects. \nIf using ink, try letting water blend the lines to mimic the softness of rain. Focus on reflections and how surfaces appear when wet.", ImageURL: "https://photos.app.goo.gl/SX8FoXkhPaboVWYb6" },
-            { Month: "M01 - Apr", Date: "Fri 18 Apr 25", WeekNum: "04", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Wildlife Returning", EncouragementMessage: "As the season changes, wildlife becomes more active—birds gather nesting materials, insects emerge, and animals reappear. The world is full of movement and energy, making it a perfect time to practise sketching from life.\n\nThis week’s challenge: Observe and sketch any wildlife around you—birds in the garden, a squirrel darting across a park, or even urban wildlife like foxes and pigeons. Focus on capturing their gestures and movement rather than every small detail.\n\nDon’t worry if they don’t stay still—quick sketches will help you build confidence in drawing moving subjects.\n\nShare your wildlife sketches in the Facebook group—let’s see how the season comes to life!", TryThis: "Try This: Quick, gestural strokes can help capture movement. \nTry working in pen for confident, expressive lines. If you're sketching from life, keep your lines loose and energetic to convey motion.", ImageURL: "https://photos.app.goo.gl/V8r4FuuUG8NShw1S7" },
-            { Month: "M02 - May", Date: "Fri 25 Apr 25", WeekNum: "05", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Springtime Landscapes", EncouragementMessage: "As the season fully settles in, take a step back and observe the wider landscape around you. Notice how colours are shifting, how trees are filling out, and how the light is brighter and warmer than a month ago.\n\nThis week’s challenge: Sketch a larger scene that represents the full arrival of spring. It could be a park bursting with new life, rolling countryside, or even a familiar place transformed by the season.\n\nThink about how the composition of your sketch can convey the feeling of freshness and growth.\n\nShare your landscapes in the Facebook group—let’s celebrate the full bloom of spring!", TryThis: "Try This: Use a mix of loose and detailed strokes to show depth. \nExperiment with layering colours in watercolour or pastels to capture the vibrancy of spring greens and floral tones.", ImageURL: "https://photos.app.goo.gl/zRuUtkJ54fLkoHTM9" },
-            { Month: "M02 - May", Date: "Fri 02 May 25", WeekNum: "06", MonthlyTheme: "Urban Life", WeeklyPrompt: "Street Scene", EncouragementMessage: "Welcome to May – Urban Life Sketching!\nA new sketching adventure begins! This month, we’re diving into the energy of urban life – from bustling streets and quiet parks to cosy cafés and transport hubs.\n\nWherever you are, there’s a story waiting to be sketched. Capture the movement of people, the character of buildings, and the atmosphere of city life. Don’t worry about perfection – just observe, simplify, and enjoy the process.\n\nThis week’s challenge: Pick a spot and sketch what you see. A street corner, a bus stop, or even your own neighbourhood. Try using quick gestural lines to capture movement!\n\nPost your sketches in the Facebook group – let’s inspire each other!\n\nHappy sketching!", TryThis: "Try This: Use fineliner pens or soft graphite pencils to capture the energy of the street. Try quick, bold lines for movement or light, sketchy strokes for depth and atmosphere.", ImageURL: "https://drive.google.com/file/d/1kp7eeCPI_7VjVuHbwL8q6gp7lUeSW_Fa/view?usp=sharing" },
-            { Month: "M02 - May", Date: "Fri 09 May 25", WeekNum: "07", MonthlyTheme: "Urban Life", WeeklyPrompt: "Café Sketching", EncouragementMessage: "Slow Down and Sketch the Moment - Cafés are full of life, conversation, and quiet moments of reflection. This week, find a cosy spot indoors or outdoors, and observe the world around you—the people, the steaming cups of coffee, the flicker of a candle, or the textures of the chairs and tables.\nTry capturing quick gestures of people chatting or sipping their drinks. If drawing people feels intimidating, start with simple shapes and build up the details. Focus on atmosphere—can you convey warmth, hustle, or quiet solitude in your sketch?\nChallenge yourself: Use a limited colour palette—perhaps just ink, pencil, or a warm wash of colour to bring life to your scene.\nAs always, share your sketches in the Facebook group! Let’s see how everyone interprets café life.\nHappy sketching!", TryThis: "Try This: Experiment with ink and wash or soft charcoal. Use loose, flowing lines to suggest movement, and add a light wash or shading to bring warmth and texture to the scene.", ImageURL: "https://drive.google.com/file/d/1YKGAuzId7iwC9ta1rdLBpriwZAaS8QKb/view?usp=sharing" },
-            { Month: "M02 - May", Date: "Fri 16 May 25", WeekNum: "08", MonthlyTheme: "Urban Life", WeeklyPrompt: "Park Bench View", EncouragementMessage: "\"\"Sketching from a Park Bench – Observe & Capture the Moment\"\"\nA park bench is the perfect place to slow down and sketch what’s around you. Whether it’s a sweeping landscape, a quiet reading moment, or a group of friends chatting, take your time to absorb the details. Notice the posture of people sitting, the dappled light through the trees, or the contrast between nature and man-made elements.\n\nDon’t worry about getting every detail perfect—focus on capturing the atmosphere and essence of the moment. Try a mix of quick gesture sketches and more detailed studies to tell a visual story.\n\nAs always, share your sketches in the Facebook group—let’s see your world from a park bench!", TryThis: "Try This: Use soft pencils or fine liners for loose, flowing sketches. Add a light wash of colour to bring warmth and mood to your scene.", ImageURL: "https://photos.app.goo.gl/wtGK2GrBu9S2sZnr7" },
-            { Month: "M02 - May", Date: "Fri 23 May 25", WeekNum: "09", MonthlyTheme: "Urban Life", WeeklyPrompt: "Transport (Buses, Trains, Cars)", EncouragementMessage: "\"\"Sketching Movement – Capturing the Energy of Transport\"\"\nBuses, trains, and cars are filled with fascinating details—reflections in windows, movement, people waiting, and the rush of daily life. This week, try sketching from a station, bus stop, or café window and observe the constant motion around you.\n\nCapture the feeling of movement with quick, expressive strokes. Try sketching people as they enter and exit a bus, the sleek curves of a car, or the geometric lines of a train station. Let go of perfection and focus on the energy of the scene.\n\nPost your sketches in the Facebook group—let’s see how you bring transport to life!", TryThis: "Try This: Experiment with ink and brush pens for strong, dynamic lines, or use watercolour washes to suggest speed and motion.", ImageURL: "https://photos.app.goo.gl/rnxgc37Yeuyz7ZfU8" },
-            { Month: "M03 - Jun", Date: "Fri 30 May 25", WeekNum: "10", MonthlyTheme: "Urban Life", WeeklyPrompt: "Evening City Scenes", EncouragementMessage: "As the sun sets, the city transforms—lights flicker on, reflections shimmer in puddles, and shadows stretch across pavements. Capturing the mood of an evening cityscape can bring a whole new dimension to your urban sketches.\n\nThis week’s challenge: Find a nighttime or dusk scene to sketch. It could be a row of glowing streetlights, the illuminated windows of a café, or people moving through a lit-up plaza. Focus on the contrast between artificial lights and the fading natural light.\n\nThink about how the city changes after dark—what atmosphere do you want to convey?\n\nShare your evening sketches in the Facebook group—let’s bring the city to life at night!", TryThis: "Try This: Use deep shadows and highlights to create contrast. \nExperiment with toned paper or a dark base layer, adding bright highlights with white gel pens or soft pastels to depict artificial lights.", ImageURL: "https://photos.app.goo.gl/GhCE3cEgugMWx9RZ8" },
-            { Month: "M03 - Jun", Date: "Fri 06 Jun 25", WeekNum: "11", MonthlyTheme: "Nature & Landscapes", WeeklyPrompt: "Forest or Woodland", EncouragementMessage: "\"\"Into the Woods – Sketching the Depths of Nature\"\"\nForests and woodlands are full of mystery, texture, and atmosphere. Tall trees, twisting roots, dappled light, and endless layers of foliage create a rich scene to explore in your sketches. Find a viewpoint that speaks to you—perhaps a sunlit clearing, a winding path, or a single tree standing tall.\n\nThink about how you can create depth in your sketch—darker values for shadowy areas, lighter strokes for misty tree lines. Capture the intricate details of bark and leaves or zoom out for a more abstract, atmospheric study of the woodland.\n\nShare your sketches in the Facebook group—let’s bring the forest to life!", TryThis: "Try This: Use charcoal or soft pastels to create a sense of depth and texture. Smudge and layer your tones to capture the soft interplay of light and shadow.", ImageURL: "https://photos.app.goo.gl/j2Cswc7bJdSmQVGH7" },
-            { Month: "M03 - Jun", Date: "Fri 13 Jun 25", WeekNum: "12", MonthlyTheme: "Nature & Landscapes", WeeklyPrompt: "Mountain Scene", EncouragementMessage: "\"\"Sketching the Majesty of Mountains\"\"\nMountains have a timeless, towering presence that can be both dramatic and peaceful. Whether you choose sharp, rugged peaks or rolling hills fading into the distance, think about how to convey scale and atmosphere in your sketch.\n\nUse bold lines for jagged cliffs, soft shading for distant misty slopes, and high contrast to emphasise light hitting the rock faces. Don’t be afraid to simplify—sometimes a few strong shapes are more effective than lots of tiny details.\n\nShare your sketches in the Facebook group—let’s climb to new creative heights!", TryThis: "Try This: Use graphite pencils or ink with a light water wash to create bold, dramatic contrasts that emphasise the depth and scale of the mountains.", ImageURL: "https://photos.app.goo.gl/vKMJBwEUAGCXk5E3A" },
-            { Month: "M03 - Jun", Date: "Fri 20 Jun 25", WeekNum: "13", MonthlyTheme: "Nature & Landscapes", WeeklyPrompt: "River or Lake View", EncouragementMessage: "\"\"Stillness & Reflection – Sketching Water Landscapes\"\"\nWater is constantly changing—sometimes calm and glassy, other times rushing and wild. This week, focus on capturing the reflections, ripples, and movement of a river or lake. Notice how the water interacts with the surrounding landscape—do trees bend over it? Do rocks break the surface?\n\nPay attention to how reflections shift with the movement of the water. Try using soft, sweeping strokes for gentle lakes and sharper lines for fast-flowing rivers. Play with contrast—darker tones for depth, lighter washes for shimmering highlights.\n\nPost your water sketches in the Facebook group—let’s see the beauty of rivers and lakes!", TryThis: "Try This: Use watercolour or ink washes to capture the fluidity of water. Experiment with wet-in-wet techniques to create soft, organic reflections.", ImageURL: "https://photos.app.goo.gl/YZiPJnbX8eWYgtND8" },
-            { Month: "M04 - Jul", Date: "Fri 27 Jun 25", WeekNum: "14", MonthlyTheme: "Nature & Landscapes", WeeklyPrompt: "Coastal Scene", EncouragementMessage: "\"\"The Rhythm of the Coast – Sketching the Sea & Shoreline\"\"\nThe coast offers endless inspiration, from crashing waves and sweeping beaches to rugged cliffs and quaint harbours. This week, choose a coastal scene that speaks to you—perhaps the dynamic energy of the waves, the texture of weathered rocks, or the stillness of boats in a harbour.\n\nThink about the movement in your scene—how can you show the power of the sea, or the tranquillity of a quiet bay? Use flowing lines for rolling waves, or jagged strokes for rocky cliffs. Let your sketch reflect the atmosphere—stormy, bright, or calm.\n\nShare your coastal sketches in the Facebook group—let’s capture the spirit of the sea!", TryThis: "Try This: Use bold brushstrokes and a mix of wet and dry techniques in watercolour or gouache to create dynamic textures in your seascape.", ImageURL: "https://photos.app.goo.gl/p4RFoC3mQVunBFjs8" },
-            { Month: "M04 - Jul", Date: "Fri 04 Jul 25", WeekNum: "15", MonthlyTheme: "Architecture & Structures", WeeklyPrompt: "Historic Buildings & Landmarks", EncouragementMessage: "Architecture tells stories of the past, and historic buildings are filled with character, textures, and unique details. Whether it's a grand cathedral, a medieval castle, or an old brick house, these structures stand as records of history.\n\nThis week’s challenge: Find a historic building or landmark in your area (or use a reference photo) and sketch it. Pay attention to architectural details—arches, columns, carvings, or weathered textures. Consider how light interacts with the structure to create depth and contrast.\n\nPost your sketches in the Facebook group—let’s capture history on paper!", TryThis: "Try This: Use fine liners or graphite pencils to create crisp architectural details. \nExperiment with hatching or cross-hatching to add texture and depth to the building's surfaces.", ImageURL: "https://photos.app.goo.gl/LdSuiitVmcdWx5Tz7" },
-            { Month: "M04 - Jul", Date: "Fri 11 Jul 25", WeekNum: "16", MonthlyTheme: "Architecture & Structures", WeeklyPrompt: "Bridges & Viaducts", EncouragementMessage: "Bridges are both functional and beautiful, with sweeping arches, strong lines, and impressive structures. From old stone viaducts to modern steel bridges, they provide interesting perspectives and compositions.\n\nThis week’s challenge: Sketch a bridge or viaduct, focusing on its structure and perspective. Try capturing how it spans across a river, road, or valley. Consider using strong vertical and diagonal lines to create depth.\n\nThink about how you can convey the material—does it have rough stone, smooth concrete, or intricate metalwork?\n\nShare your bridge sketches in the Facebook group!", TryThis: "Try This: Use a ruler for precise lines, or try freehand sketching for a more expressive approach. \nConsider adding a background landscape to place the bridge in context.", ImageURL: "https://photos.app.goo.gl/Q91RuLA4GnZ5iumQ9" },
-            { Month: "M04 - Jul", Date: "Fri 18 Jul 25", WeekNum: "17", MonthlyTheme: "Architecture & Structures", WeeklyPrompt: "Windows & Doorways", EncouragementMessage: "Windows and doors add personality to a building. Some are grand and decorative, while others are simple and functional. Sketching these architectural elements helps you practice proportion, perspective, and fine details.\n\nThis week’s challenge: Find an interesting window or doorway and sketch it. Look at how shadows fall across the frame, how reflections appear in glass, and how textures vary between wood, stone, or metal.\n\nThink about what’s behind the door or inside the window—how can you suggest a sense of mystery or history?\n\nPost your sketches in the Facebook group!", TryThis: "Try This: Use ink or fine liners for strong outlines, then add watercolour washes for texture. \nTry different perspectives—straight-on, angled, or even a dramatic close-up of details.", ImageURL: "https://photos.app.goo.gl/DezLfLki9hqqs98t5" },
-            { Month: "M04 - Jul", Date: "Fri 25 Jul 25", WeekNum: "18", MonthlyTheme: "Architecture & Structures", WeeklyPrompt: "Ruins & Abandoned Places", EncouragementMessage: "Crumbling ruins and abandoned buildings tell silent stories of time and change. The contrast between man-made structures and nature reclaiming them can be fascinating to sketch.\n\nThis week’s challenge: Find a ruin, an old barn, or an abandoned industrial site to sketch. Focus on broken lines, rough textures, and how plants may be growing into the structure. Capture a sense of age and decay.\n\nDon’t worry about perfect symmetry—let the imperfections bring character to your sketch.\n\nPost your ruins and abandoned sketches in the Facebook group!", TryThis: "Try This: Use loose, sketchy lines to emphasize the aged look. \nExperiment with soft shading and smudging techniques to show crumbling textures.", ImageURL: "https://photos.app.goo.gl/XwoZNam8fVfD1fnt5" },
-            { Month: "M05 - Aug", Date: "Fri 01 Aug 25", WeekNum: "19", MonthlyTheme: "Beach Life, Holidays and the Sea", WeeklyPrompt: "Seaside Views & Coastal Landscapes", EncouragementMessage: "The coastline offers a rich variety of sketching opportunities—sweeping beaches, dramatic cliffs, and ever-changing waves. Whether calm or stormy, the sea has a unique presence that can be captured in your sketches.\n\nThis week’s challenge: Find a coastal view—real or from a reference photo—and sketch the scene. Look at how the shoreline curves, how waves break against rocks, and how light plays across the water’s surface.\n\nFocus on creating atmosphere—does your sketch feel peaceful, wild, or full of summer energy?\n\nPost your seaside sketches in the Facebook group!", TryThis: "Try This: Use broad, sweeping strokes for waves and gentle shading for sand. \nExperiment with layering wet-on-wet watercolour to create soft sea and sky gradients.", ImageURL: "https://photos.app.goo.gl/1WJ1XCUw7yxPXgiw5" },
-            { Month: "M05 - Aug", Date: "Fri 08 Aug 25", WeekNum: "20", MonthlyTheme: "Beach Life, Holidays and the Sea", WeeklyPrompt: "People at the Beach", EncouragementMessage: "Beaches are full of life, from families playing in the sand to sunbathers, swimmers, and surfers. Capturing the movement and relaxation of beachgoers is a great way to practice figure sketching.\n\nThis week’s challenge: Sketch people at the beach—walking along the shore, sitting under umbrellas, or playing in the waves. Focus on body language and how people interact with their surroundings.\n\nKeep it simple—gestural sketches work well to capture movement quickly.\n\nShare your beach figure sketches in the Facebook group!", TryThis: "Try This: Use loose, gestural lines to capture movement. \nTry quick, 30-second sketches of people to build confidence before refining details.", ImageURL: "https://photos.app.goo.gl/q6GvTvPUc6gL9Me38" },
-            { Month: "M05 - Aug", Date: "Fri 15 Aug 25", WeekNum: "21", MonthlyTheme: "Beach Life, Holidays and the Sea", WeeklyPrompt: "Boats & Harbours", EncouragementMessage: "Boats add a dynamic element to coastal scenes, from small fishing vessels to grand yachts. Harbours are full of interesting shapes—masts, ropes, reflections in the water—making them a great subject for sketching.\n\nThis week’s challenge: Find a harbour or a docked boat and sketch its form. Observe how boats float on water, how their reflections shift, and how their structures curve.\n\nThink about how you can use contrast to separate the boat from the background.\n\nPost your harbour sketches in the Facebook group!", TryThis: "Try This: Use a fine liner for detailed rigging and ropes. \nTry adding reflections with soft horizontal strokes to suggest water movement.", ImageURL: "https://photos.app.goo.gl/7Ys8bdhN91P5cLZd7" },
-            { Month: "M05 - Aug", Date: "Fri 22 Aug 25", WeekNum: "22", MonthlyTheme: "Beach Life, Holidays and the Sea", WeeklyPrompt: "Rockpools & Shells", EncouragementMessage: "Rockpools are tiny worlds of colour and texture, filled with seaweed, crabs, and shimmering water. They provide an opportunity to study intricate details up close.\n\nThis week’s challenge: Find a rockpool or collect some seashells and sketch them. Focus on textures—smooth shells, rough rocks, or the delicate patterns on a crab’s shell.\n\nHow can you make your sketch feel natural and organic?\n\nShare your rockpool and shell sketches in the Facebook group!", TryThis: "Try This: Use coloured pencils or fine-tip pens to capture intricate textures. \nExperiment with stippling or hatching to suggest rough and smooth surfaces.", ImageURL: "https://photos.app.goo.gl/5RKPBmy8LpkYaLZy8" },
-            { Month: "M06 - Sep", Date: "Fri 29 Aug 25", WeekNum: "23", MonthlyTheme: "Movement & Gesture", WeeklyPrompt: "Running Figures", EncouragementMessage: "Capturing movement in a sketch can bring life and energy to your drawings. Running figures challenge you to simplify forms while keeping a sense of motion.\n\nThis week’s challenge: Sketch a running figure. Observe how the arms and legs move in opposition, how the body leans forward, and how clothing reacts to speed. Use quick, gestural lines rather than focusing on small details.\n\nTry drawing multiple poses in succession to tell a visual story of movement.\n\nPost your sketches in the Facebook group—let’s bring energy into our drawings!", TryThis: "Try This: Use a soft graphite pencil or brush pen to create fluid, dynamic strokes. \nExperiment with motion lines or overlapping figures to suggest speed and action.", ImageURL: "https://photos.app.goo.gl/R1aPJi7m3H6vfaTWA" },
-            { Month: "M06 - Sep", Date: "Fri 05 Sep 25", WeekNum: "24", MonthlyTheme: "Movement & Gesture", WeeklyPrompt: "Dancing Poses", EncouragementMessage: "Dance combines rhythm, balance, and expression. Whether it’s ballet, street dance, or traditional folk dance, sketching dancers helps you study body movement and flow.\n\nThis week’s challenge: Sketch a dancing figure. Pay attention to posture, the extension of limbs, and the curve of the spine. Focus on capturing the elegance or power of the movement.\n\nUse sweeping lines to enhance the feeling of motion in your sketches.\n\nShare your dance-inspired sketches in the Facebook group!", TryThis: "Try This: Use long, flowing strokes to emphasize movement. \nTry sketching a sequence of poses to show progression in dance.", ImageURL: "https://photos.app.goo.gl/pv8RWw8m9WZLvufN6" },
-            { Month: "M06 - Sep", Date: "Fri 12 Sep 25", WeekNum: "25", MonthlyTheme: "Movement & Gesture", WeeklyPrompt: "Cyclists & Sportspeople", EncouragementMessage: "Sports provide a great way to study dynamic body movement—whether it’s a cyclist leaning into a turn, a footballer kicking a ball, or a swimmer diving into the water.\n\nThis week’s challenge: Choose a sport and sketch an athlete in motion. Observe how the body shifts weight, how muscles tense, and how movement is distributed across limbs.\n\nDon’t worry about capturing every detail—focus on the gesture and energy of the pose.\n\nPost your sports sketches in the Facebook group!", TryThis: "Try This: Use quick, loose lines to establish the pose before refining details. \nTry layering sketches of different movements on the same page to show progression.", ImageURL: "https://photos.app.goo.gl/D6ravqzjDd3MgNkVA" },
-            { Month: "M06 - Sep", Date: "Fri 19 Sep 25", WeekNum: "26", MonthlyTheme: "Movement & Gesture", WeeklyPrompt: "Crowds & Gatherings", EncouragementMessage: "When sketching crowds, it’s impossible to capture every detail—so simplifying forms and focusing on posture is key. Crowds offer the opportunity to study overlapping figures, perspective, and group dynamics.\n\nThis week’s challenge: Sketch a scene with multiple people—at a market, train station, or public event. Observe how figures interact with each other and how movement varies across individuals.\n\nConsider using silhouettes or clusters of shapes to suggest groups without drawing every detail.\n\nShare your crowd sketches in the Facebook group!", TryThis: "Try This: Use bold, simplified shapes to define figures in a crowd. \nTry working with contrast—silhouetted figures against a lighter background can create a striking composition.", ImageURL: null }, // Assuming missing URL
-            { Month: "M07 - Oct", Date: "Fri 26 Sep 25", WeekNum: "27", MonthlyTheme: "People & Portraits", WeeklyPrompt: "Portrait from a Photo", EncouragementMessage: "\"\"Capturing Character – Sketching from a Photo\"\"\nDrawing from a photo allows you to take your time, study the details, and refine your technique without the pressure of a moving subject. This week, choose a photo of a person who inspires you—whether it’s a famous figure, a loved one, or even a self-portrait.\n\nFocus on the structure of the face—how light falls across the features, the proportions, and the expression. Don’t get caught up in making it look exactly like the photo; instead, aim to capture the essence of the person.\n\nPost your portraits in the Facebook group—let’s bring our subjects to life!\n\nSuggested Medium:", TryThis: "Try This: Use a soft graphite pencil or charcoal for shading. Focus on light and shadow rather than linework to create depth and realism.", ImageURL: null },
-            { Month: "M07 - Oct", Date: "Fri 03 Oct 25", WeekNum: "28", MonthlyTheme: "People & Portraits", WeeklyPrompt: "Expressive Faces", EncouragementMessage: "\"\"Bringing Faces to Life – Expressions & Emotion\"\"\nA face can tell a story without words. This week, explore how different expressions—joy, surprise, determination, or contemplation—can be conveyed through sketching.\n\nPay close attention to eyebrows, eyes, and mouth shape—small changes in these areas can completely shift the mood. Try exaggerating expressions to push the emotional impact. Quick sketches of different expressions can be a great warm-up!\n\nShare your expressive faces in the Facebook group—let’s bring emotion to our sketches!", TryThis: "Try This: Use ink or a ballpoint pen to create bold, confident lines. Experiment with cross-hatching or shading to bring expressions to life.", ImageURL: null },
-            { Month: "M07 - Oct", Date: "Fri 10 Oct 25", WeekNum: "29", MonthlyTheme: "People & Portraits", WeeklyPrompt: "Hands & Feet Study", EncouragementMessage: "\"\"The Art of Hands & Feet – A Sketcher’s Challenge\"\"\nHands and feet are notoriously tricky but essential in figure drawing. This week, break them down into simple shapes before adding detail—think of hands as blocks and cylinders, and feet as wedges.\n\nTry sketching your own hand in different poses, or capture movement by drawing feet in various positions. Gesture studies can help build confidence before adding more detail.\n\nPost your hand and foot studies in the Facebook group—let’s tackle this challenge together!", TryThis: "Try This: Use a fine liner or mechanical pencil for precision. Start with light, loose lines before committing to final contours.", ImageURL: null },
-            { Month: "M07 - Oct", Date: "Fri 17 Oct 25", WeekNum: "30", MonthlyTheme: "People & Portraits", WeeklyPrompt: "Full Body Gesture Sketch", EncouragementMessage: "\"\"Movement & Flow – Capturing the Human Form\"\"\nGesture drawing is about capturing the essence of a pose, not the details. This week, practise quick, loose sketches of full-body figures in action—walking, stretching, dancing, or just standing in a relaxed pose.\n\nFocus on flow and energy rather than perfect anatomy. Use long, sweeping strokes to define posture and weight. Set a timer for 30-second or 1-minute sketches to loosen up.\n\nShare your gesture sketches in the Facebook group—let’s bring our figures to life!", TryThis: "Try This: Use a soft graphite stick or brush pen for bold, expressive strokes. Let your lines flow freely and avoid erasing.", ImageURL: null },
-            { Month: "M07 - Oct", Date: "Fri 24 Oct 25", WeekNum: "31", MonthlyTheme: "People & Portraits", WeeklyPrompt: "Figures in Context", EncouragementMessage: "A portrait is more than just a face—it tells a story. Placing a person in a scene adds context, emotion, and atmosphere to your sketch.\n\nThis week’s challenge: Sketch a figure within a setting. It could be a person reading in a café, an artist at work, or someone sitting on a bench. Observe how the figure interacts with their surroundings and how light falls on them.\n\nThink about composition—how can you balance the background and the subject to create a compelling sketch?\n\nPost your people-in-context sketches in the Facebook group!", TryThis: "Try This: Use a mix of loose and controlled lines—loose strokes for the environment, controlled details for the figure. \nExperiment with a limited colour palette to highlight the subject within the scene.", ImageURL: null },
-            { Month: "M08 - Nov", Date: "Fri 31 Oct 25", WeekNum: "32", MonthlyTheme: "Still Life & Objects", WeeklyPrompt: "Kitchen Objects", EncouragementMessage: "\"\"Everyday Objects, Extraordinary Sketches\"\"\nThe kitchen is full of interesting shapes, reflections, and textures. From a simple wooden spoon to a shiny kettle, each object has its own personality. This week, take a look around your kitchen and pick an object (or a few) to sketch.\n\nFocus on the form, material, and how light interacts with the surface—does it shine, cast soft shadows, or have a rough texture? Try arranging multiple objects into a small still life for an added challenge.\n\nPost your kitchen sketches in the Facebook group—let’s celebrate the beauty in the everyday!", TryThis: "Try This: Use a soft pencil or pen for clean outlines, then add shading or hatching to show volume and texture.", ImageURL: null },
-            { Month: "M08 - Nov", Date: "Fri 07 Nov 25", WeekNum: "33", MonthlyTheme: "Still Life & Objects", WeeklyPrompt: "Tools & Equipment", EncouragementMessage: "\"\"The Shapes of Function – Sketching Tools & Equipment\"\"\nTools have a practical design, often with strong, geometric shapes and interesting details. Whether it’s a hammer, a pair of scissors, or a paintbrush, these objects tell a story of their purpose.\n\nThis week, find a tool or piece of equipment you use regularly and sketch it from different angles. Try breaking it down into basic shapes before adding details.\n\nPost your tool sketches in the Facebook group—let’s see what everyone comes up with!", TryThis: "Try This: Use fine liners or coloured pencils to add definition and precision to mechanical objects.", ImageURL: null },
-            { Month: "M08 - Nov", Date: "Fri 14 Nov 25", WeekNum: "34", MonthlyTheme: "Still Life & Objects", WeeklyPrompt: "Glassware & Reflections", EncouragementMessage: "\"\"Capture the beauty of transparency and light.\"\"\nGlass objects present a wonderful challenge—how do you depict something that is both there and not there? Study the way light bends, reflects, and distorts through glass. Pay attention to highlights, shadows, and subtle colour shifts. Look for reflections and refractions in windows, drinking glasses, or decorative glassware.\n\nThis week’s challenge: Sketch a glass object and focus on how light interacts with it. Try layering tones to create depth and shine.", TryThis: "Try This: Use pencil and eraser techniques to lift highlights, or experiment with watercolour and ink to capture reflections and transparency.", ImageURL: null },
-            { Month: "M08 - Nov", Date: "Fri 21 Nov 25", WeekNum: "35", MonthlyTheme: "Still Life & Objects", WeeklyPrompt: "Fruits & Vegetables", EncouragementMessage: "\"\"The colours, shapes, and textures of nature.\"\"\nFruits and vegetables are not just everyday objects—they’re full of rich textures, striking colours, and fascinating forms. Whether it’s the smooth skin of an apple, the rough surface of a pineapple, or the delicate curves of a pepper, there’s plenty to explore.\n\nThis week’s challenge: Arrange a small still life of fruit or vegetables and sketch what you see. Pay attention to their textures and the way light falls on their surfaces.", TryThis: "Try This: Use coloured pencils or soft pastels to build up layers of vibrant colour and texture. Experiment with hatching and cross-hatching to create form.", ImageURL: null },
-            { Month: "M09 - Dec", Date: "Fri 28 Nov 25", WeekNum: "36", MonthlyTheme: "Light & Shadow", WeeklyPrompt: "Strong Light Source Shadows", EncouragementMessage: "December brings opportunities to explore dramatic lighting. Strong light sources—such as midday sun, streetlights, or stage lighting—cast bold, defined shadows that can add depth and intensity to sketches.\n\nThis week’s challenge: Find a scene where a strong light source creates deep shadows. It could be an indoor lamp, a low winter sun, or festive lights illuminating a street. Observe how light falls on objects and how shadows stretch and distort.\n\nPlay with high contrast to create striking compositions.\n\nPost your light and shadow sketches in the Facebook group!", TryThis: "Try This: Use deep, bold shading to emphasize contrast. \nExperiment with strong directional light, using black ink or charcoal for dramatic effect.", ImageURL: null },
-            { Month: "M09 - Dec", Date: "Fri 05 Dec 25", WeekNum: "37", MonthlyTheme: "Light & Shadow", WeeklyPrompt: "Night Scenes", EncouragementMessage: "Winter nights are full of glowing windows, festive lights, and atmospheric street scenes. Sketching at night offers a chance to work with contrast, reflections, and silhouettes.\n\nThis week’s challenge: Capture a nighttime scene—whether it’s a quiet snowy street, the glow of Christmas markets, or a candlelit window. Focus on how limited light sources define the mood.\n\nThink about the feeling of warmth or cold in your scene—how can you use light to tell the story?\n\nShare your night scene sketches in the Facebook group!", TryThis: "Try This: Use a dark background and lift highlights with white pencil, pastel, or gel pen. \nTry sketching with just light and shadow, avoiding mid-tones to create a high-contrast effect.", ImageURL: null },
-            { Month: "M09 - Dec", Date: "Fri 12 Dec 25", WeekNum: "38", MonthlyTheme: "Light & Shadow", WeeklyPrompt: "Candlelight or Firelight", EncouragementMessage: "Few light sources are as warm and inviting as candlelight or firelight. The flickering glow creates soft edges, rich shadows, and a sense of intimacy—perfect for winter-themed sketches.\n\nThis week’s challenge: Sketch a scene lit by candlelight or firelight. It could be a Christmas dinner table, a lantern-lit window, or a cosy fireplace.\n\nObserve how warm light interacts with surrounding objects, casting soft highlights and deep shadows.\n\nPost your candlelit sketches in the Facebook group!", TryThis: "Try This: Use warm colours like orange, red, and yellow to enhance the glow of firelight. \nExperiment with blending soft edges to mimic the natural flicker of flames.", ImageURL: null },
-            { Month: "M09 - Dec", Date: "Fri 19 Dec 25", WeekNum: "39", MonthlyTheme: "Light & Shadow", WeeklyPrompt: "Backlit Subjects", EncouragementMessage: "Backlighting can create dramatic silhouettes, glowing edges, and a sense of mystery in a sketch. Think of a person standing against a sunset, a Christmas tree glowing in a dark room, or a winter landscape with soft, diffused light.\n\nThis week’s challenge: Find or create a backlit subject. Focus on the shape of the silhouette and how light wraps around the edges. Pay attention to how details are lost in shadow while highlights remain crisp.\n\nCapture the balance between shadow and light.\n\nPost your backlit sketches in the Facebook group!", TryThis: "Try This: Use a light wash or soft shading for the glow effect. \nExperiment with silhouette drawing, keeping most of the details in shadow while highlighting edges with contrast.", ImageURL: null },
-            { Month: "M10 - Jan", Date: "Fri 26 Dec 25", WeekNum: "40", MonthlyTheme: "Textures & Patterns", WeeklyPrompt: "Close-Up Textures (Tree Bark, Fabrics)", EncouragementMessage: "Textures are everywhere—from rough tree bark to the soft weave of fabric. Observing and capturing textures helps develop patience and attention to detail in your sketches.\n\nThis week’s challenge: Choose a highly textured object—tree bark, a knitted scarf, or a weathered surface. Focus on how the texture repeats, changes, and interacts with light.\n\nTake your time studying the fine details—how can you translate them into your drawing?\n\nPost your textured sketches in the Facebook group!", TryThis: "Try This: Use cross-hatching, stippling, or layering to create depth in texture. \nExperiment with different pencil pressures to add variation and realism.", ImageURL: null },
-            { Month: "M10 - Jan", Date: "Fri 02 Jan 26", WeekNum: "41", MonthlyTheme: "Textures & Patterns", WeeklyPrompt: "Patterns in Nature (Shells, Leaves)", EncouragementMessage: "Nature is filled with patterns, from the spirals in seashells to the symmetry of leaves. These organic designs are both beautiful and great practice for observational sketching.\n\nThis week’s challenge: Find a natural pattern—veins in a leaf, ripples in water, or the petals of a flower. Observe how the pattern repeats and varies across the surface.\n\nFocus on rhythm and flow rather than absolute perfection.\n\nShare your natural pattern sketches in the Facebook group!", TryThis: "Try This: Use ink or fine liners to emphasize delicate details. \nExperiment with shading techniques to highlight subtle variations in the pattern.", ImageURL: null },
-            { Month: "M10 - Jan", Date: "Fri 09 Jan 26", WeekNum: "42", MonthlyTheme: "Textures & Patterns", WeeklyPrompt: "Man-Made Patterns (Tiles, Fences)", EncouragementMessage: "Architectural details and everyday objects often feature repeating patterns—brick walls, tiled floors, woven baskets. These structured designs contrast with organic patterns found in nature.\n\nThis week’s challenge: Find a man-made pattern—geometric tiles, ironwork, or textile prints. Focus on perspective and repetition to create a strong visual effect.\n\nTry simplifying complex patterns while keeping the overall feel intact.\n\nPost your pattern sketches in the Facebook group!", TryThis: "Try This: Use a ruler to help with accuracy, but don’t be afraid to freehand elements for a natural look. \nExperiment with shading or colour to enhance depth in repetitive designs.", ImageURL: null },
-            { Month: "M10 - Jan", Date: "Fri 16 Jan 26", WeekNum: "43", MonthlyTheme: "Textures & Patterns", WeeklyPrompt: "Reflections in Water", EncouragementMessage: "Reflections create a fascinating mix of sharp details and blurred distortions. Water surfaces reflect their surroundings, but movement causes constant shifts in pattern.\n\nThis week’s challenge: Sketch a reflection in water—a lake, puddle, or even a glass of water. Observe how the reflection changes depending on ripples, waves, or wind.\n\nThink about how to balance sharp details with soft, flowing forms.\n\nPost your reflection sketches in the Facebook group!", TryThis: "Try This: Use wet-on-wet watercolour for soft, blended reflections. \nTry drawing the scene first, then distorting it slightly to suggest movement in water.", ImageURL: null },
-            { Month: "M10 - Jan", Date: "Fri 23 Jan 26", WeekNum: "44", MonthlyTheme: "Textures & Patterns", WeeklyPrompt: "Textures in Everyday Objects", EncouragementMessage: "Textures are all around us—wood grain, crumpled paper, frosted glass, or rough stone. Studying these textures helps build an understanding of how light and surface interact.\n\nThis week’s challenge: Choose an everyday object with an interesting texture and sketch it. Pay attention to how shadows create depth and how the material reacts to light.\n\nHow can you make the texture feel real just using lines and shading?\n\nPost your texture studies in the Facebook group!", TryThis: "Try This: Use pencil or charcoal for shading and depth. \nExperiment with different mark-making techniques like stippling or scraping to create texture effects.", ImageURL: null },
-            { Month: "M11 - Feb", Date: "Fri 30 Jan 26", WeekNum: "45", MonthlyTheme: "Experimental & Abstract", WeeklyPrompt: "Monochrome Study", EncouragementMessage: "Working in monochrome helps you focus on composition, contrast, and value without the distraction of colour. It’s a great way to refine your understanding of light and shadow.\n\nThis week’s challenge: Create a sketch using just one colour or shade. You can work in black and white, sepia tones, or a single vibrant colour. Focus on depth and tonal variations to create an engaging composition.\n\nTry experimenting with different levels of contrast to add drama.\n\nPost your monochrome sketches in the Facebook group!", TryThis: "Try This: Use ink washes, graphite, or charcoal to explore tonal values. \nExperiment with erasing or lifting highlights to create depth and contrast.", ImageURL: null },
-            { Month: "M11 - Feb", Date: "Fri 06 Feb 26", WeekNum: "46", MonthlyTheme: "Experimental & Abstract", WeeklyPrompt: "Mixed Media Experiment", EncouragementMessage: "Mixing media can bring unexpected textures and visual interest to your artwork. Combining ink, watercolour, collage, or digital elements allows you to step outside traditional sketching.\n\nThis week’s challenge: Create a mixed-media sketch using at least two different materials. Try layering textures or using unconventional tools—sponges, palette knives, or even found objects.\n\nEmbrace spontaneity and let the process guide your composition.\n\nPost your mixed-media experiments in the Facebook group!", TryThis: "Try This: Combine wet and dry media, such as ink and pastel or watercolour and collage. \nExperiment with different surfaces—try sketching on toned paper or textured backgrounds for added depth.", ImageURL: null },
-            { Month: "M11 - Feb", Date: "Fri 13 Feb 26", WeekNum: "47", MonthlyTheme: "Experimental & Abstract", WeeklyPrompt: "Fast Sketching (1-Minute Poses)", EncouragementMessage: "Speed sketching sharpens observation skills and encourages fluidity in your work. The goal is to capture the essence of a subject quickly, without overthinking.\n\nThis week’s challenge: Set a timer and create a series of 1-minute sketches. You can draw people, objects, or abstract shapes—focus on movement and key details rather than perfection.\n\nUse confident, loose strokes to convey energy in your sketches.\n\nPost your quick sketches in the Facebook group!", TryThis: "Try This: Use a brush pen, soft graphite, or marker for fast, expressive strokes. \nTry sketching in continuous line or using blind contour drawing to challenge yourself further.", ImageURL: null },
-            { Month: "M11 - Feb", Date: "Fri 20 Feb 26", WeekNum: "48", MonthlyTheme: "Experimental & Abstract", WeeklyPrompt: "Abstract Shapes & Forms", EncouragementMessage: "Abstract art allows you to break free from realism and focus on composition, balance, and mood. Playing with shapes and forms can spark creativity and unexpected discoveries.\n\nThis week’s challenge: Create an abstract composition using bold shapes, overlapping lines, and expressive marks. Focus on movement, rhythm, and contrast rather than realism.\n\nExperiment with patterns, layering, or non-traditional colour schemes.\n\nPost your abstract sketches in the Facebook group!", TryThis: "Try This: Use geometric or organic shapes to create balance in your composition. \nExperiment with bold colours, cut-out shapes, or expressive brushstrokes for a dynamic effect.", ImageURL: null },
-            { Month: "M12 - Mar", Date: "Fri 27 Feb 26", WeekNum: "49", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Cosy Corners & Reading Nooks", EncouragementMessage: "Home is filled with quiet, comforting spaces—perfect spots to sketch and capture a sense of warmth and familiarity. A reading nook, a favourite chair, or a quiet space can tell a personal story.\n\nThis week’s challenge: Find a cosy corner in your home or a place you like to relax. Pay attention to how objects interact with the space—books stacked on a table, a soft blanket draped over a chair, or warm light filtering through curtains.\n\nTry to convey the mood—does your sketch feel inviting and peaceful?\n\nPost your cosy corner sketches in the Facebook group!", TryThis: "Try This: Use soft pencil shading or warm colour washes to add depth and atmosphere. \nExperiment with composition—try a close-up view or a wider scene to capture the environment.", ImageURL: null },
-            { Month: "M12 - Mar", Date: "Fri 06 Mar 26", WeekNum: "50", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Kitchen Scenes & Still Life", EncouragementMessage: "The kitchen is often the heart of the home, full of character and life. It’s a place of shared meals, quiet mornings, and interesting objects to sketch.\n\nThis week’s challenge: Sketch a kitchen scene—a cluttered worktop, a cup of tea steaming in the light, or a row of jars and utensils. Focus on textures and reflections—shiny metal pots, rough wooden boards, or soft cloth napkins.\n\nTry capturing a moment—someone preparing food, a stack of plates, or a half-eaten meal.\n\nShare your kitchen sketches in the Facebook group!", TryThis: "Try This: Use fine liners or ink wash for a classic still-life feel. \nExperiment with reflections—see how glass, metal, and ceramics interact with light.", ImageURL: null },
-            { Month: "M12 - Mar", Date: "Fri 13 Mar 26", WeekNum: "51", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Windows & Views from Home", EncouragementMessage: "Windows frame the outside world, offering glimpses of nature, city life, or changing light throughout the day. They create interesting compositions with perspective, light, and shadow.\n\nThis week’s challenge: Sketch a window in your home and the view beyond it. Observe how light filters through, how curtains or blinds interact with the scene, and how reflections affect the glass.\n\nThink about mood—how does the view feel at different times of day?\n\nPost your window view sketches in the Facebook group!", TryThis: "Try This: Use contrast—dark interiors against bright outdoor scenes create depth. \nExperiment with different angles—straight-on, side views, or dramatic close-ups.", ImageURL: null },
-            { Month: "M12 - Mar", Date: "Fri 20 Mar 26", WeekNum: "52", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Favourite Room or Object", EncouragementMessage: "A home is filled with objects that hold personal meaning—a well-worn armchair, a treasured ornament, or a workspace where creativity happens. Sketching these familiar things can help develop storytelling in your art.\n\nThis week’s challenge: Choose your favourite room or object in your home and sketch it. Consider why it’s meaningful—what details make it special? Try to capture the essence of the space, whether it’s a cosy bedroom, a lively kitchen, or a well-used desk.\n\nWhat does this space say about you?\n\nPost your home sketches in the Facebook group!", TryThis: "Try This: Use soft shading or subtle colour to create mood. \nExperiment with perspective—try a close-up of details or a wide-angle sketch of the whole room.", ImageURL: null }
+            // ... (Keep your 52 weeks of data here) ...
+             { Month: "M01 - Apr", Date: "Fri 28 Mar 25", WeekNum: "01", MonthlyTheme: "Spring Awakening", WeeklyPrompt: "Early Signs of Spring", EncouragementMessage: "### Spring Awakening ###\nSpring is here! A new season of sketching begins, full of fresh colours, blooming flowers, and the return of life to the landscape.\n\nNature is waking up—so should your sketchbook! Look for the small but powerful signs of spring: the first blossoms, greener landscapes, or even the changing mood of the sky. Notice how the light softens as the days grow longer, casting warmer tones and creating fresh contrasts in the environment.\n\nThis week’s challenge: Go for a walk—whether in a park, a garden, or even a city street—and observe the early signs of spring. Sketch what catches your eye, whether it’s a delicate flower pushing through the ground, raindrops clinging to new leaves, or birds returning to nest.\n\nPost your sketches in the Facebook group—let’s celebrate the season together!\n\nHappy sketching!", TryThis: "Try This: Use watercolours or coloured pencils to layer soft, fresh tones. \nCapture delicate textures with light, feathery strokes. Experiment with sketching outdoors, even if only for a few minutes, to observe real-time seasonal changes.", ImageURL: "https://photos.app.goo.gl/MUhcG7fwLY1m3z546" },
+            // Add all other 51 weeks here...
+             { Month: "M12 - Mar", Date: "Fri 20 Mar 26", WeekNum: "52", MonthlyTheme: "Interiors & Home Spaces", WeeklyPrompt: "Favourite Room or Object", EncouragementMessage: "A home is filled with objects that hold personal meaning—a well-worn armchair, a treasured ornament, or a workspace where creativity happens. Sketching these familiar things can help develop storytelling in your art.\n\nThis week’s challenge: Choose your favourite room or object in your home and sketch it. Consider why it’s meaningful—what details make it special? Try to capture the essence of the space, whether it’s a cosy bedroom, a lively kitchen, or a well-used desk.\n\nWhat does this space say about you?\n\nPost your home sketches in the Facebook group!", TryThis: "Try This: Use soft shading or subtle colour to create mood. \nExperiment with perspective—try a close-up of details or a wide-angle sketch of the whole room.", ImageURL: null }
         ];
 
         // --- Application State & Logic ---
-        let currentWeekIndex = 0;
+        let currentView = 'welcome'; // 'welcome', 'detail', 'gallery'
+        let currentWeekIndex = -1; // -1 for Welcome, 0 to 51 for actual weeks
+        let selectedGalleryWeekNum = null; // Which week's gallery is showing
         let completionStatus = {}; // { '01': true, ... }
-        let submissionStatus = {}; // { '01': { filename: '...', thumbnail: 'data:image/...' }, ... }
+        let submissionStatus = {}; // { '01': { filename: '...', thumbnail: 'data:...' }, ... }
         const totalWeeks = sketchingData.length;
-        const COMPLETION_STORAGE_KEY = 'sketchingCourseCompletion_25_26';
-        const SUBMISSION_STORAGE_KEY = 'sketchingCourseSubmissions_25_26';
-        const THUMBNAIL_MAX_WIDTH = 150; // Max width for stored thumbnails
+        const COMPLETION_STORAGE_KEY = 'sketchingCourseCompletion_25_26_v2'; // Updated key
+        const SUBMISSION_STORAGE_KEY = 'sketchingCourseSubmissions_25_26_v2'; // Updated key
+        const WELCOME_SEEN_KEY = 'sketchingCourseWelcomeSeen_25_26_v2'; // To track if welcome was seen *this session*
+        const THUMBNAIL_MAX_WIDTH = 150;
 
         // DOM Elements
-        const welcomeOverlay = document.getElementById('welcome-overlay');
-        const startButton = document.getElementById('start-button');
+        const contentArea = document.getElementById('content-area');
         const weekList = document.getElementById('week-list');
-        const weekDetail = document.getElementById('week-detail');
         const currentWeekDisplay = document.getElementById('current-week-display');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
-        const submissionSection = document.getElementById('submission-section');
-        const fileInput = document.getElementById('submission-upload');
-        const fileInfo = document.getElementById('file-info');
-        const thumbnailPreview = document.getElementById('thumbnail-preview');
-        const completeButton = document.getElementById('complete-button');
+        const viewGalleryButton = document.getElementById('view-gallery-button');
+        const backToDetailButton = document.getElementById('back-to-detail-button');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
-        const contentScrollArea = document.querySelector('.content-scroll-area');
 
-        // --- Functions ---
-
-        function loadState() {
-            // Load Completion Status
+        // --- Utility Functions ---
+        function loadState() { /* ... (Same as previous, using new keys) ... */
+             // Load Completion Status
             const savedCompletion = localStorage.getItem(COMPLETION_STORAGE_KEY);
             try {
                 completionStatus = savedCompletion ? JSON.parse(savedCompletion) : {};
                 if (typeof completionStatus !== 'object' || completionStatus === null) completionStatus = {};
-            } catch (e) {
-                console.error("Error parsing completion status:", e);
-                completionStatus = {};
-            }
-
+            } catch (e) { console.error("Error parsing completion status:", e); completionStatus = {}; }
             // Load Submission Status
             const savedSubmissions = localStorage.getItem(SUBMISSION_STORAGE_KEY);
              try {
                 submissionStatus = savedSubmissions ? JSON.parse(savedSubmissions) : {};
                  if (typeof submissionStatus !== 'object' || submissionStatus === null) submissionStatus = {};
-             } catch (e) {
-                 console.error("Error parsing submission status:", e);
-                 submissionStatus = {};
-             }
-
-
+             } catch (e) { console.error("Error parsing submission status:", e); submissionStatus = {}; }
             // Initialize missing weeks
             sketchingData.forEach(week => {
-                if (typeof completionStatus[week.WeekNum] !== 'boolean') {
-                     completionStatus[week.WeekNum] = false;
-                 }
-                 // Ensure submission entry exists, even if null
-                 if (submissionStatus[week.WeekNum] === undefined) {
-                      submissionStatus[week.WeekNum] = null; // Use null to indicate no submission
-                 }
+                if (typeof completionStatus[week.WeekNum] !== 'boolean') completionStatus[week.WeekNum] = false;
+                if (submissionStatus[week.WeekNum] === undefined) submissionStatus[week.WeekNum] = null;
              });
         }
-
-        function saveData(key, data) {
-             try {
-                localStorage.setItem(key, JSON.stringify(data));
-             } catch (e) {
+        function saveData(key, data) { /* ... (Same as previous) ... */
+             try { localStorage.setItem(key, JSON.stringify(data)); }
+             catch (e) {
                  console.error(`Error saving data for key "${key}":`, e);
-                 // Handle potential quota exceeded errors
                  if (e.name === 'QuotaExceededError') {
-                     alert('Could not save progress. Browser local storage might be full. Try clearing some space or other site data.');
+                     alert('Could not save progress/submission. Browser local storage might be full.');
                  }
              }
         }
-
-        function formatTextContent(text) {
-            if (!text) return '';
+        function formatTextContent(text) { /* ... (Same as previous) ... */
+             if (!text) return '';
             text = text.replace(/^### (.*?) ###$/gm, '<h3>$1</h3>');
             text = text.replace(/^(Try This:)/gim, '<strong>$1</strong>');
             let paragraphs = text.split(/\n\n+/);
-            text = paragraphs
-                .map(p => p.trim())
-                .filter(p => p.length > 0)
-                .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
-                .join('');
+            text = paragraphs.map(p => p.trim()).filter(p => p.length > 0)
+                           .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
             return text;
         }
-
-         // Function to generate a resized thumbnail Data URL
-         function generateThumbnail(file, callback) {
-             if (!file || !file.type.startsWith('image/')) {
-                 callback(null); // Not an image file
-                 return;
-             }
-
+         function generateThumbnail(file, callback) { /* ... (Same as previous) ... */
+            if (!file || !file.type.startsWith('image/')) { callback(null); return; }
              const reader = new FileReader();
              reader.onload = (e) => {
                  const img = new Image();
                  img.onload = () => {
                      const canvas = document.createElement('canvas');
                      const ctx = canvas.getContext('2d');
-
-                     let width = img.width;
-                     let height = img.height;
-
-                     if (width > THUMBNAIL_MAX_WIDTH) {
-                         height *= THUMBNAIL_MAX_WIDTH / width;
-                         width = THUMBNAIL_MAX_WIDTH;
-                     }
-                     // Could add similar check for max height if needed
-
-                     canvas.width = width;
-                     canvas.height = height;
+                     let width = img.width, height = img.height;
+                     if (width > THUMBNAIL_MAX_WIDTH) { height *= THUMBNAIL_MAX_WIDTH / width; width = THUMBNAIL_MAX_WIDTH; }
+                     canvas.width = width; canvas.height = height;
                      ctx.drawImage(img, 0, 0, width, height);
-
-                     // Get data URL (use jpeg for potentially smaller size than png)
-                     const dataUrl = canvas.toDataURL('image/jpeg', 0.8); // Quality 0.8
+                     const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
                      callback(dataUrl);
                  };
-                 img.onerror = () => {
-                     console.error("Error loading image for thumbnail generation.");
-                     callback(null);
-                 };
+                 img.onerror = () => { console.error("Err loading img for thumb"); callback(null); };
                  img.src = e.target.result;
              };
-             reader.onerror = () => {
-                  console.error("Error reading file for thumbnail generation.");
-                  callback(null);
-             };
+             reader.onerror = () => { console.error("Err reading file for thumb"); callback(null); };
              reader.readAsDataURL(file);
          }
 
+        // --- Core Rendering & State Updates ---
 
-         function handleFileUpload(event) {
-             const file = event.target.files[0];
-             const weekNum = sketchingData[currentWeekIndex].WeekNum;
-
-             if (file) {
-                 fileInfo.textContent = `Selected: ${file.name}`;
-                 thumbnailPreview.src = ""; // Clear previous preview
-                 thumbnailPreview.style.display = 'block'; // Show preview area
-
-                  generateThumbnail(file, (thumbnailDataUrl) => {
-                      if (thumbnailDataUrl) {
-                         thumbnailPreview.src = thumbnailDataUrl;
-                         submissionStatus[weekNum] = {
-                             filename: file.name,
-                             thumbnail: thumbnailDataUrl
-                         };
-                         console.log(`Generated thumbnail for week ${weekNum}, size: ${thumbnailDataUrl.length} bytes`);
-                      } else {
-                          // Failed to generate thumbnail, store only filename
-                         thumbnailPreview.style.display = 'none';
-                         fileInfo.textContent += " (Preview not available)";
-                          submissionStatus[weekNum] = {
-                             filename: file.name,
-                             thumbnail: null
-                         };
-                      }
-                       saveData(SUBMISSION_STORAGE_KEY, submissionStatus);
-                       updateCompletionButtonState(); // Update button now that submission is processed
-                  });
-
-             } else {
-                 // No file selected or selection cancelled
-                 // Only clear if there wasn't a previously saved submission
-                 if (!submissionStatus[weekNum]) {
-                     fileInfo.textContent = "No file selected.";
-                     thumbnailPreview.src = "";
-                     thumbnailPreview.style.display = 'none';
-                     submissionStatus[weekNum] = null; // Explicitly mark as no submission
-                     saveData(SUBMISSION_STORAGE_KEY, submissionStatus);
-                     updateCompletionButtonState();
-                 }
-             }
-         }
-
-        function updateCompletionButtonState() {
-            const week = sketchingData[currentWeekIndex];
-            if (!week) return;
-
-            const weekNum = week.WeekNum;
-            const isCompleted = completionStatus[weekNum];
-            const hasSubmission = submissionStatus[weekNum] !== null;
-
-            if (isCompleted) {
-                // Already complete - button allows marking incomplete
-                completeButton.textContent = 'Mark as Incomplete ✔';
-                completeButton.classList.remove('mark-complete');
-                completeButton.classList.add('mark-incomplete');
-                completeButton.disabled = false; // Can always mark incomplete
-                completeButton.setAttribute('aria-pressed', 'true');
-            } else {
-                 // Not complete yet
-                completeButton.classList.remove('mark-incomplete');
-                completeButton.classList.add('mark-complete');
-                completeButton.setAttribute('aria-pressed', 'false');
-                if (hasSubmission) {
-                    // Has submission, allow marking complete
-                    completeButton.textContent = 'Mark as Complete';
-                    completeButton.disabled = false;
-                } else {
-                    // No submission, disable completion
-                    completeButton.textContent = 'Upload Submission to Complete';
-                    completeButton.disabled = true;
-                }
-            }
+        function updateUI() {
+            renderSidebarList();
+            renderContentArea();
+            updateHeader();
+            updateProgress();
         }
 
+        function renderSidebarList() {
+            weekList.innerHTML = ''; // Clear
 
-        function renderWeekList() {
-            weekList.innerHTML = ''; // Clear existing list
+            // Add Welcome Item
+            const welcomeLi = document.createElement('li');
+            welcomeLi.dataset.index = -1;
+            welcomeLi.classList.add('welcome-item');
+            welcomeLi.setAttribute('role', 'button'); welcomeLi.setAttribute('tabindex', '0');
+            const welcomeTitle = document.createElement('span');
+            welcomeTitle.classList.add('week-title');
+            welcomeTitle.textContent = "👋 Welcome!";
+            welcomeLi.appendChild(welcomeTitle);
+            if (currentView === 'welcome') welcomeLi.classList.add('active');
+            welcomeLi.addEventListener('click', () => navigateToView('welcome'));
+            welcomeLi.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') navigateToView('welcome'); });
+            weekList.appendChild(welcomeLi);
+
+            // Add Week Items
             sketchingData.forEach((week, index) => {
                 const li = document.createElement('li');
                 li.dataset.index = index;
-                li.setAttribute('role', 'button');
-                li.setAttribute('tabindex', '0');
+                li.setAttribute('role', 'button'); li.setAttribute('tabindex', '0');
+                const titleSpan = document.createElement('span'); titleSpan.classList.add('week-title'); titleSpan.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
+                const statusSpan = document.createElement('span'); statusSpan.classList.add('week-status'); statusSpan.textContent = '✔'; statusSpan.setAttribute('aria-hidden', 'true');
+                li.appendChild(titleSpan); li.appendChild(statusSpan);
 
-                const titleSpan = document.createElement('span');
-                titleSpan.classList.add('week-title');
-                titleSpan.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
-
-                const statusSpan = document.createElement('span');
-                statusSpan.classList.add('week-status');
-                statusSpan.textContent = '✔';
-                statusSpan.setAttribute('aria-hidden', 'true');
-
-                li.appendChild(titleSpan);
-                li.appendChild(statusSpan);
-
-                if (index === currentWeekIndex) {
-                    li.classList.add('active');
-                    li.setAttribute('aria-current', 'true');
-                }
+                if (currentView === 'detail' && index === currentWeekIndex) li.classList.add('active');
                 if (completionStatus[week.WeekNum]) {
-                    li.classList.add('completed');
+                     li.classList.add('completed');
                      li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt} (Completed)`);
-                } else {
+                 } else {
                      li.setAttribute('aria-label', `Week ${week.WeekNum}: ${week.WeeklyPrompt}`);
-                }
+                 }
 
-                li.addEventListener('click', () => navigateToWeek(index));
-                 li.addEventListener('keydown', (e) => {
-                     if (e.key === 'Enter' || e.key === ' ') {
-                         e.preventDefault();
-                         navigateToWeek(index);
-                     }
-                 });
-
+                li.addEventListener('click', () => navigateToView('detail', index));
+                li.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') navigateToView('detail', index); });
                 weekList.appendChild(li);
             });
-             updateProgress();
+
              // Scroll active item into view (desktop only)
              if (window.innerWidth > 768) {
                  const activeItem = weekList.querySelector('.active');
                  if (activeItem) {
-                     activeItem.scrollIntoView({ behavior: 'auto', block: 'nearest' }); // Use auto for less jarring scroll on load
+                     activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                  }
              }
         }
 
-        function renderWeekDetail(index) {
-            const week = sketchingData[index];
-            if (!week) return;
+        function renderContentArea() {
+            contentArea.innerHTML = ''; // Clear previous content
 
-            currentWeekIndex = index;
-            const weekNum = week.WeekNum;
-            const submission = submissionStatus[weekNum];
+            if (currentView === 'welcome') {
+                renderWelcomeContent();
+            } else if (currentView === 'detail') {
+                renderWeekDetailContent();
+            } else if (currentView === 'gallery') {
+                renderGalleryContent();
+            }
+            contentArea.scrollTop = 0; // Scroll to top
+        }
 
-             // --- Render Main Content ---
-             let imageHtml = ''; // Placeholder for example image display
-             const imageContainerId = `example-image-container-${weekNum}`;
-             if (week.ImageURL) { // Handle the *example* image URL
+        function renderWelcomeContent() {
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.classList.add('welcome-content');
+            welcomeDiv.innerHTML = `
+                <h1>Welcome to the Sketching Year!</h1>
+                <p>This interactive guide follows the <strong>2025-26 Master Sketching Plan</strong>. Each week presents a new theme and prompt to inspire your creativity.</p>
+                <p>Use the sidebar to navigate between the welcome message and the weekly lessons. For each week:</p>
+                <ul>
+                    <li>Read the guidance and encouragement.</li>
+                    <li>Try the suggested techniques ("Try This").</li>
+                    <li>Look at the example image (if provided).</li>
+                    <li><strong>Upload a photo of your sketch</strong> using the "Choose Image" button. A small preview will be saved locally in your browser.</li>
+                    <li>Once uploaded, you can mark the week as <strong>complete</strong>.</li>
+                    <li>View the "Submissions Gallery" for a week to see your uploaded sketch (and simulated placeholders for others).</li>
+                </ul>
+                <p>Your progress and submission previews are saved in your browser's local storage, so they'll be here when you return on the same device and browser.</p>
+                <p><strong>Ready to start?</strong> Click "Next" above or select Week 1 from the sidebar.</p>
+             `;
+             contentArea.appendChild(welcomeDiv);
+        }
+
+        function renderWeekDetailContent() {
+             if (currentWeekIndex < 0 || currentWeekIndex >= totalWeeks) return; // Invalid index
+
+             const week = sketchingData[currentWeekIndex];
+             const weekNum = week.WeekNum;
+             const submission = submissionStatus[weekNum];
+
+             // Main Detail Div
+             const detailDiv = document.createElement('div');
+             detailDiv.id = 'week-detail'; // Keep ID for potential direct targeting if needed
+
+             // Example Image Handling (Async load)
+             let exampleImageHtml = '';
+             const exampleImageContainerId = `example-image-container-${weekNum}`;
+             if (week.ImageURL) {
                  let processedUrl = null;
-                 if (week.ImageURL.includes('drive.google.com/file/d/')) {
-                    const fileIdMatch = week.ImageURL.match(/file\/d\/([^/]+)/);
-                    if (fileIdMatch && fileIdMatch[1]) processedUrl = `https://lh3.googleusercontent.com/d/${fileIdMatch[1]}=w800`;
-                 } else if (week.ImageURL.includes('photos.app.goo.gl/')) {
-                     processedUrl = week.ImageURL; // Might not work
-                 } else {
-                     processedUrl = week.ImageURL; // Assume direct link
-                 }
+                 if (week.ImageURL.includes('drive.google.com/file/d/')) { const m = week.ImageURL.match(/file\/d\/([^/]+)/); if (m) processedUrl = `https://lh3.googleusercontent.com/d/${m[1]}=w800`; }
+                 else if (week.ImageURL.includes('photos.app.goo.gl/')) { processedUrl = week.ImageURL; } // Unreliable
+                 else { processedUrl = week.ImageURL; }
 
                  if (processedUrl) {
-                    imageHtml = `<div id="${imageContainerId}" class="image-placeholder">Loading example image...</div>`;
-                     setTimeout(() => { // Load async
-                         const container = document.getElementById(imageContainerId);
-                         if (!container) return;
-                         const img = new Image();
+                     exampleImageHtml = `<div id="${exampleImageContainerId}" class="image-placeholder">Loading example image...</div>`;
+                     setTimeout(() => { /* ... (async image load logic from previous step) ... */
+                         const container = document.getElementById(exampleImageContainerId); if (!container) return;
+                         const img = new Image(); img.alt = `Example for ${week.WeeklyPrompt}`;
                          img.onload = () => { container.innerHTML = ''; container.className = 'image-loaded-container'; container.appendChild(img); };
                          img.onerror = () => { container.innerHTML = 'Example image failed to load.'; container.className = 'image-placeholder error'; };
-                         img.src = processedUrl; img.alt = `Example for ${week.WeeklyPrompt}`;
+                         img.src = processedUrl;
                      }, 0);
-                 } else {
-                    imageHtml = `<div class="image-placeholder">Invalid example image URL.</div>`;
-                 }
-             } else {
-                imageHtml = `<div class="image-placeholder">No example image provided.</div>`;
-             }
+                 } else { exampleImageHtml = `<div class="image-placeholder">Invalid example image URL.</div>`; }
+             } else { exampleImageHtml = `<div class="image-placeholder">No example image provided.</div>`; }
 
-
-            weekDetail.innerHTML = `
+             detailDiv.innerHTML = `
                 <h2>${week.WeeklyPrompt}</h2>
-                <div class="week-meta">
-                    <strong>Week ${weekNum}</strong> | ${week.Date} | Theme: ${week.MonthlyTheme}
-                </div>
+                <div class="week-meta"><strong>Week ${weekNum}</strong> | ${week.Date} | Theme: ${week.MonthlyTheme}</div>
                 ${week.EncouragementMessage ? `<div class="encouragement-container">${formatTextContent(week.EncouragementMessage)}</div>` : ''}
                 ${week.TryThis ? `<div class="trythis-container">${formatTextContent(week.TryThis)}</div>` : ''}
-                ${imageHtml} <!-- Example image display -->
-            `;
+                ${exampleImageHtml}
+             `;
+             contentArea.appendChild(detailDiv);
 
-            // --- Render Submission Section ---
-            submissionSection.style.display = 'block'; // Show submission area
-            if (submission) {
-                fileInfo.textContent = `Submitted: ${submission.filename}`;
-                if (submission.thumbnail) {
-                    thumbnailPreview.src = submission.thumbnail;
-                    thumbnailPreview.style.display = 'block';
-                } else {
-                    thumbnailPreview.src = "";
-                    thumbnailPreview.style.display = 'none';
-                }
-            } else {
-                fileInfo.textContent = 'No file selected.';
-                thumbnailPreview.src = "";
-                thumbnailPreview.style.display = 'none';
-            }
-             // Reset file input value visually (doesn't clear the actual selected file if user navigates away and back)
-             fileInput.value = null;
+             // Submission Area Div
+             const submissionDiv = document.createElement('div');
+             submissionDiv.classList.add('submission-area');
+             submissionDiv.id = 'submission-section'; // For potential targeting
+             submissionDiv.innerHTML = `
+                <h4>Your Submission</h4>
+                <label for="submission-upload" class="upload-label">Choose Image</label>
+                <input type="file" id="submission-upload" name="submission_upload" accept="image/*">
+                <span id="file-info">No file selected.</span>
+                <img id="thumbnail-preview" src="" alt="Submission preview">
+             `;
+             contentArea.appendChild(submissionDiv);
 
+             // Completion Toggle Div
+             const completionDiv = document.createElement('div');
+             completionDiv.classList.add('completion-toggle');
+             completionDiv.innerHTML = `<button id="complete-button" disabled>Upload Submission to Complete</button>`;
+             contentArea.appendChild(completionDiv);
 
-            // --- Update Global UI Elements ---
-            currentWeekDisplay.textContent = `Wk ${weekNum}: ${week.WeeklyPrompt}`;
-            prevButton.disabled = index === 0;
-            nextButton.disabled = index === totalWeeks - 1;
-            updateCompletionButtonState(); // Update based on loaded submission/completion status
+             // Add event listeners to newly created elements
+             const fileInput = submissionDiv.querySelector('#submission-upload');
+             const completeBtn = completionDiv.querySelector('#complete-button');
+             if (fileInput) fileInput.addEventListener('change', handleFileUpload);
+             if (completeBtn) completeBtn.addEventListener('click', toggleCompletion);
 
-
-            // Update sidebar active state
-            const currentActive = weekList.querySelector('.active');
-            if (currentActive) currentActive.classList.remove('active');
-            const newActive = weekList.querySelector(`li[data-index="${index}"]`);
-            if (newActive) newActive.classList.add('active');
-
-            contentScrollArea.scrollTop = 0; // Scroll content to top
-        }
-
-        function navigateToWeek(index) {
-            if (index >= 0 && index < totalWeeks) {
-                renderWeekDetail(index);
-                renderWeekList(); // Ensure list reflects active state correctly
-            }
-        }
-
-        function toggleCompletion() {
-            const week = sketchingData[currentWeekIndex];
-            if (!week) return;
-
-            // Only allow toggling if the button isn't disabled (which means submission exists if marking complete)
-             if (!completeButton.disabled) {
-                 completionStatus[week.WeekNum] = !completionStatus[week.WeekNum];
-                 saveData(COMPLETION_STORAGE_KEY, completionStatus);
-                 updateCompletionButtonState(); // Update button text/state
-                 renderWeekList(); // Update list style and progress bar
+             // Update submission display based on saved state
+             const fileInfoSpan = submissionDiv.querySelector('#file-info');
+             const thumbnailImg = submissionDiv.querySelector('#thumbnail-preview');
+             if (submission) {
+                 fileInfoSpan.textContent = `Submitted: ${submission.filename}`;
+                 if (submission.thumbnail) {
+                     thumbnailImg.src = submission.thumbnail;
+                     thumbnailImg.style.display = 'block';
+                 } else {
+                     thumbnailImg.style.display = 'none';
+                     fileInfoSpan.textContent += " (Preview not available)";
+                 }
+             } else {
+                 fileInfoSpan.textContent = 'No file selected.';
+                 thumbnailImg.style.display = 'none';
              }
+
+             updateCompletionButtonState(); // Set initial state for the button
         }
+
+        function renderGalleryContent() {
+            const weekNum = selectedGalleryWeekNum;
+            if (!weekNum) return; // Safety check
+
+            const galleryDiv = document.createElement('div');
+            galleryDiv.id = 'gallery-view';
+            galleryDiv.innerHTML = `<h2>Submissions Gallery: Week ${weekNum}</h2><div class="gallery-grid"></div>`;
+            const grid = galleryDiv.querySelector('.gallery-grid');
+
+            let submissionsFound = false;
+
+             // Display the user's submission
+             const userSubmission = submissionStatus[weekNum];
+             if (userSubmission && userSubmission.thumbnail) {
+                 submissionsFound = true;
+                 const itemDiv = document.createElement('div');
+                 itemDiv.classList.add('gallery-item', 'user-submission');
+                 itemDiv.innerHTML = `
+                     <img src="${userSubmission.thumbnail}" alt="Your submission for Week ${weekNum}">
+                     <div class="filename">You: ${userSubmission.filename}</div>
+                 `;
+                 grid.appendChild(itemDiv);
+             } else if (userSubmission) { // Has filename but no thumbnail
+                  submissionsFound = true;
+                  const itemDiv = document.createElement('div');
+                  itemDiv.classList.add('gallery-item', 'user-submission', 'no-preview');
+                  itemDiv.innerHTML = `
+                      <div class="placeholder">Preview N/A</div>
+                      <div class="filename">You: ${userSubmission.filename}</div>
+                  `;
+                  grid.appendChild(itemDiv);
+             }
+
+             // --- Simulation: Add placeholder submissions ---
+             const placeholderCount = 7; // Number of placeholders to show
+             for (let i = 0; i < placeholderCount; i++) {
+                 submissionsFound = true; // Consider placeholders as content
+                 const itemDiv = document.createElement('div');
+                 itemDiv.classList.add('gallery-item', 'placeholder');
+                 itemDiv.innerHTML = `Placeholder ${i + 1}`;
+                 grid.appendChild(itemDiv);
+             }
+             // --- End Simulation ---
+
+
+            if (!submissionsFound) {
+                grid.innerHTML = '<p class="no-submissions">No submissions (including yours) found for this week yet.</p>';
+            }
+
+            contentArea.appendChild(galleryDiv);
+        }
+
+         function updateHeader() {
+             // Update Title
+             if (currentView === 'welcome') {
+                 currentWeekDisplay.textContent = "Welcome!";
+             } else if (currentView === 'detail' && currentWeekIndex !== -1) {
+                 const week = sketchingData[currentWeekIndex];
+                 currentWeekDisplay.textContent = `Wk ${week.WeekNum}: ${week.WeeklyPrompt}`;
+             } else if (currentView === 'gallery' && selectedGalleryWeekNum) {
+                  currentWeekDisplay.textContent = `Gallery: Week ${selectedGalleryWeekNum}`;
+             } else {
+                 currentWeekDisplay.textContent = "Sketching Year"; // Fallback
+             }
+
+             // Update Buttons Visibility/State
+             prevButton.style.display = (currentView !== 'gallery') ? 'inline-block' : 'none';
+             nextButton.style.display = (currentView !== 'gallery') ? 'inline-block' : 'none';
+             viewGalleryButton.style.display = (currentView === 'detail') ? 'inline-block' : 'none';
+             backToDetailButton.style.display = (currentView === 'gallery') ? 'inline-block' : 'none';
+
+             // Update Prev/Next Disabled State
+             if (currentView === 'welcome') {
+                 prevButton.disabled = true;
+                 nextButton.disabled = false; // Can always go to Week 1
+             } else if (currentView === 'detail') {
+                 prevButton.disabled = currentWeekIndex <= 0; // Disable if on Week 1
+                 nextButton.disabled = currentWeekIndex >= totalWeeks - 1; // Disable if on last week
+                 // Disable gallery button if no submission exists for the current week (optional)
+                 const currentWeekNum = sketchingData[currentWeekIndex]?.WeekNum;
+                 viewGalleryButton.disabled = !(currentWeekNum && submissionStatus[currentWeekNum]);
+             }
+         }
 
         function updateProgress() {
              const completedCount = Object.values(completionStatus).filter(status => status === true).length;
@@ -744,28 +615,110 @@
              progressBar.style.width = `${progressPercent}%`;
          }
 
-        // --- Event Listeners ---
-        startButton.addEventListener('click', () => {
-            welcomeOverlay.classList.add('hidden');
-        });
+        // --- Event Handlers ---
+        function handleFileUpload(event) {
+             const file = event.target.files[0];
+             if (currentView !== 'detail' || currentWeekIndex === -1) return; // Only handle in detail view
 
-        prevButton.addEventListener('click', () => navigateToWeek(currentWeekIndex - 1));
-        nextButton.addEventListener('click', () => navigateToWeek(currentWeekIndex + 1));
-        completeButton.addEventListener('click', toggleCompletion);
-        fileInput.addEventListener('change', handleFileUpload);
+             const weekNum = sketchingData[currentWeekIndex].WeekNum;
+             const fileInfoSpan = document.getElementById('file-info'); // Get fresh reference
+             const thumbnailImg = document.getElementById('thumbnail-preview'); // Get fresh reference
+
+             if (file && fileInfoSpan && thumbnailImg) {
+                 fileInfoSpan.textContent = `Processing: ${file.name}`;
+                 thumbnailImg.src = "";
+                 thumbnailImg.style.display = 'none'; // Hide until ready
+
+                 generateThumbnail(file, (thumbnailDataUrl) => {
+                     const currentSubmission = {
+                         filename: file.name,
+                         thumbnail: thumbnailDataUrl
+                     };
+                     submissionStatus[weekNum] = currentSubmission;
+                     saveData(SUBMISSION_STORAGE_KEY, submissionStatus);
+
+                     // Update UI only if still on the same week
+                     if (currentWeekIndex !== -1 && sketchingData[currentWeekIndex].WeekNum === weekNum) {
+                        fileInfoSpan.textContent = `Submitted: ${currentSubmission.filename}`;
+                         if (currentSubmission.thumbnail) {
+                             thumbnailImg.src = currentSubmission.thumbnail;
+                             thumbnailImg.style.display = 'block';
+                         } else {
+                             thumbnailImg.style.display = 'none';
+                             fileInfoSpan.textContent += " (Preview not available)";
+                         }
+                         updateCompletionButtonState(); // Update button now submission exists
+                     }
+                 });
+             }
+         }
+         function toggleCompletion() {
+             if (currentView !== 'detail' || currentWeekIndex === -1) return;
+             const completeBtn = document.getElementById('complete-button'); // Get fresh reference
+             if (!completeBtn || completeBtn.disabled) return; // Don't toggle if disabled
+
+             const week = sketchingData[currentWeekIndex];
+             completionStatus[week.WeekNum] = !completionStatus[week.WeekNum];
+             saveData(COMPLETION_STORAGE_KEY, completionStatus);
+             updateCompletionButtonState(); // Update button text/state
+             renderSidebarList(); // Update list style and progress bar
+         }
+         function navigateToView(viewType, index = currentWeekIndex) {
+             // Set new state
+             currentView = viewType;
+             if (viewType === 'detail') {
+                 currentWeekIndex = index;
+                 selectedGalleryWeekNum = null; // Clear gallery selection
+             } else if (viewType === 'gallery') {
+                 // Ensure we are coming from a valid detail view
+                 if (currentWeekIndex !== -1) {
+                      selectedGalleryWeekNum = sketchingData[currentWeekIndex].WeekNum;
+                 } else {
+                      // Cannot go to gallery from welcome, maybe default to week 1? Or stay on welcome?
+                      // Let's prevent gallery from welcome for simplicity
+                      console.warn("Cannot view gallery from Welcome screen.");
+                      currentView = 'welcome'; // Revert state
+                      return;
+                 }
+             } else if (viewType === 'welcome') {
+                  currentWeekIndex = -1; // Set index for welcome
+                  selectedGalleryWeekNum = null;
+             }
+             updateUI(); // Re-render everything based on new state
+         }
+
 
         // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
              loadState(); // Load both completion and submission states
-             renderWeekList(); // Render sidebar list
 
-             // Determine initial week (e.g., first incomplete)
-             let initialWeek = 0;
-             const firstIncompleteIndex = sketchingData.findIndex(w => !completionStatus[w.WeekNum]);
-             if(firstIncompleteIndex !== -1) initialWeek = firstIncompleteIndex;
+             // Start on the Welcome screen
+             navigateToView('welcome');
 
-             navigateToWeek(initialWeek); // Load the initial week details
-             updateProgress(); // Update progress bar based on loaded state
+             // Add listeners for header buttons
+             prevButton.addEventListener('click', () => {
+                 if (currentView === 'detail') navigateToView('detail', currentWeekIndex - 1);
+                 // Special case: Prev from Week 1 goes to Welcome
+                 if (currentView === 'detail' && currentWeekIndex === 0) navigateToView('welcome');
+             });
+             nextButton.addEventListener('click', () => {
+                 if (currentView === 'welcome') navigateToView('detail', 0); // Go to Week 1
+                 else if (currentView === 'detail') navigateToView('detail', currentWeekIndex + 1);
+             });
+             viewGalleryButton.addEventListener('click', () => {
+                 if (currentView === 'detail') navigateToView('gallery');
+             });
+             backToDetailButton.addEventListener('click', () => {
+                  // Go back to the detail view of the week whose gallery was being viewed
+                  const weekIndex = sketchingData.findIndex(w => w.WeekNum === selectedGalleryWeekNum);
+                  if (weekIndex !== -1) {
+                       navigateToView('detail', weekIndex);
+                  } else {
+                       navigateToView('welcome'); // Fallback if week not found
+                  }
+             });
+
+             updateProgress(); // Initial progress update based on loaded status
         });
 
     </script>
